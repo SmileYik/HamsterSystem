@@ -1,0 +1,12 @@
+name: HamsterSystem
+main: com.github.schooluniform.hamstersystem.HamsterSystem
+version: 0.0.1
+author: School_Uniform
+commands:
+  hs:
+    description: getHamsterSystemHelp
+    usage: /<command> [true/false]
+permissions: 
+  HamsterSystem.Admin: 
+    description: Use commands
+    default: op

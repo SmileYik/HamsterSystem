@@ -1,0 +1,4 @@
+base-damages:
+  impact: 2
+  element-damages:
+    - "A:1"
