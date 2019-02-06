@@ -13,6 +13,7 @@ import com.github.schooluniform.hamstersystem.fightsystem.base.BasicDamageData;
 import com.github.schooluniform.hamstersystem.fightsystem.base.DamageType;
 import com.github.schooluniform.hamstersystem.fightsystem.base.ElementalDamageType;
 import com.github.schooluniform.hamstersystem.mod.MergeMod;
+import com.github.schooluniform.hamstersystem.weapon.Calculation;
 import com.github.schooluniform.hamstersystem.weapon.Weapon;
 import com.github.schooluniform.hamstersystem.weapon.WeaponAttribute;
 import com.github.schooluniform.hamstersystem.weapon.WeaponTag;
@@ -61,10 +62,10 @@ public class DamageSystem {
 				elementalDamages.put(entry.getKey(), (baseDamage/4D)*(1+entry.getValue()/100D));
 		
 		for(Map.Entry<WeaponAttribute, Double> entry : mod.getWeaponAttributes().entrySet()){
-			if(entry.getKey().getWay() == '*'){
+			if(entry.getKey().getWay() == Calculation.Multiplication){
 				if(weaponAttributes.containsKey(entry.getKey()))
 					weaponAttributes.replace(entry.getKey(), (1+entry.getValue()/100D)*weaponAttributes.get(entry.getKey()));
-			}else if(entry.getKey().getWay() == '+'){
+			}else if(entry.getKey().getWay() == Calculation.Addition){
 				if(weaponAttributes.containsKey(entry.getKey()))
 					weaponAttributes.replace(entry.getKey(), entry.getValue()+weaponAttributes.get(entry.getKey()));
 				else

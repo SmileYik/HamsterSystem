@@ -13,8 +13,23 @@ public class Data {
 	private static HashMap<Integer,Mod> mods = new HashMap<>();
 	private static HashMap<String, Integer> modsByName = new HashMap<>();
 	
+	private static HashMap<String,PlayerData> playerDatas = new HashMap<>();
+	
 	public static void init(){
 		
+	}
+	
+	public static void addPlayer(String playerName){
+		if(playerDatas.containsKey(playerName))return;
+		playerDatas.put(playerName, PlayerData.laod(playerName));
+	}
+	
+	public static  void removePlayer(String playerName){
+		playerDatas.remove(playerName).save();
+	}
+	
+	public static PlayerData getPlayerData(String playerName){
+		return playerDatas.get(playerName);
 	}
 	
 	public static Weapon getWeapon(String name){

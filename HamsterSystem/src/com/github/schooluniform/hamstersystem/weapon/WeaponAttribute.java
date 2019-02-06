@@ -2,41 +2,48 @@ package com.github.schooluniform.hamstersystem.weapon;
 
 public enum WeaponAttribute {
 	/**暴击倍数*/
-	Crit_Damage('*'),
+	Crit_Damage(Calculation.Multiplication),
 	/**暴击几率*/
-	Crit_Chance('*'),
+	Crit_Chance(Calculation.Multiplication),
 	/**触发几率*/
-	Trigger_Adds('*'),
+	Trigger_Adds(Calculation.Multiplication),
 	/**贯穿几率*/
-	Impact_Over('+'),
+	Impact_Over(Calculation.Addition),
 	/**攻击间隔*/
-	Attack_Interval('*'),
+	Attack_Interval(Calculation.Multiplication),
 	/**弹夹*/
-	Clip('*'),
+	Clip(Calculation.Multiplication),
 	/**X轴精准*/
-	Precise_X('*'),
+	Precise_X(Calculation.Multiplication),
 	/**Y轴精准*/
-	Precise_Y('*'),
+	Precise_Y(Calculation.Multiplication),
 	/**Z轴精准*/
-	Precise_Z('*'),
+	Precise_Z(Calculation.Multiplication),
 	/**射速*/
-	Rate_of_Fire('*'),
+	Rate_of_Fire(Calculation.Multiplication),
 	/**后坐力*/
-	Recoil('*'),
+	Recoil(Calculation.Multiplication),
 	/**换弹时长*/
-	Reload_Speed('*'),
+	Reload_Speed(Calculation.Multiplication),
 	/**近战充能时每次攻击所消耗的能量*/
-	Charging_Efficiency('*'),
+	Charging_Efficiency(Calculation.Multiplication),
 	/**近战武器充能时所增加的伤害倍率*/
-	Charging_Damage('*'),;
+	Charging_Damage(Calculation.Multiplication),;
 	
-	private char way;
+	private Calculation way;
 	
-	WeaponAttribute(char way){
+	WeaponAttribute(Calculation way){
 		this.way = way;
 	}
 	
-	public char getWay(){
+	//计算方法
+	public Calculation getWay(){
+		return way;
+	}
+	
+	public static Calculation getCalculation(){
+		Calculation way = null;
 		return way;
 	}
 }
+

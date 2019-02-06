@@ -1,17 +1,22 @@
 package com.github.schooluniform.hamstersystem;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.github.schooluniform.hamstersystem.data.Data;
 
 import java.io.File;
 
 public class HamsterSystem extends JavaPlugin{
 	public static HamsterSystem plugin;
-	
+	//La vie est drole
 	
 	@Override
 	public void onEnable() {
 		plugin = this;
 		firstLoad();
+		
+		addOnlinePlayer();
 	}
 	
 	
@@ -28,4 +33,10 @@ public class HamsterSystem extends JavaPlugin{
 			saveDefaultConfig();
 		try{reloadConfig();}catch (Exception e){}
 	}
+	
+	private void addOnlinePlayer(){
+		for(Player p : getServer().getOnlinePlayers())
+			Data.addPlayer(p.getName());
+	}
+	
 }

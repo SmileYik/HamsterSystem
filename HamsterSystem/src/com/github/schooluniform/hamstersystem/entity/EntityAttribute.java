@@ -11,6 +11,10 @@ public enum EntityAttribute {
 	Energy,
 	/**生命*/
 	Health,
+	/**生命恢复速率*/
+	HealthRefresh,
+	/**Level*/
+	Level,
 	/**打击护甲, 遭受打击伤害时获得护甲加成*/
 	ImpactArmor,
 	/**切割护甲, 遭受切割伤害时获得护甲加成*/
@@ -37,5 +41,7 @@ public enum EntityAttribute {
 	RadiationArmor,
 	/**病毒护甲, 遭受病毒伤害时获得护甲加成*/
 	ViralArmor,
+	
+	//属性护甲类,若值为 -1 则为免疫对应属性效果及伤害
 	
 }
