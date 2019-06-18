@@ -28,6 +28,10 @@ public class MergeMod {
 		HashMap<DamageType, Double> damages = new HashMap<>();
 		HashMap<ElementalDamageType, Double> elementalDamages = new HashMap<>();
 		HashMap<WeaponAttribute,Double> weaponAttributes = new HashMap<>();
+		
+		if(modsId == null)
+			return new MergeMod(damages, elementalDamages, weaponAttributes, new HashMap<>());
+			
 		int size = modsId.length>modsLevel.length?modsLevel.length:modsId.length;
 		
 		for(int i = 0 ; i<size ;i++){
@@ -64,8 +68,12 @@ public class MergeMod {
 		HashMap<DamageType, Double> damages = new HashMap<>();
 		HashMap<ElementalDamageType, Double> elementalDamages = new HashMap<>();
 		HashMap<EntityAttribute,Double> entityAttributes = new HashMap<>();
-		int size = modsId.length>modsLevel.length?modsLevel.length:modsId.length;
 		
+		if(modsId == null){			
+			return new MergeMod(damages, elementalDamages,new HashMap<>(),entityAttributes);
+		}
+		
+		int size = modsId.length>modsLevel.length?modsLevel.length:modsId.length;
 		for(int i = 0 ; i<size ;i++){
 			int modId = modsId[i];
 			if(modId<0 || !Data.contansMod(modId))continue;

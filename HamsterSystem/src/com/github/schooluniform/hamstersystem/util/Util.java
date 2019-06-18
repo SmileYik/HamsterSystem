@@ -58,12 +58,17 @@ public class Util {
 		}
 	}
 	
+	public static String formatNum(double num,int l){
+		return String.format("%."+l+"f", num);
+	}
+	
 	//TODO 
 	public static HashMap<EntityAttribute,Double> getDefaultEntityAttributes(){
 		HashMap<EntityAttribute,Double> attributes = new HashMap<>();
 		attributes.put(EntityAttribute.Health, 100D);
 		attributes.put(EntityAttribute.Armor, 1D);
 		attributes.put(EntityAttribute.Shield, 100D);
+		attributes.put(EntityAttribute.ShieldRefresh, 10D);
 		return attributes;
 	}
 }

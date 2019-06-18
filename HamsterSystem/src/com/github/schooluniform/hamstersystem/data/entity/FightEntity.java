@@ -2,6 +2,7 @@ package com.github.schooluniform.hamstersystem.data.entity;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -14,7 +15,9 @@ import org.bukkit.entity.Player;
 import com.github.schooluniform.hamstersystem.HamsterSystem;
 import com.github.schooluniform.hamstersystem.data.Data;
 import com.github.schooluniform.hamstersystem.entity.EntityAttribute;
+import com.github.schooluniform.hamstersystem.mod.MergeMod;
 import com.github.schooluniform.hamstersystem.util.Util;
+import com.github.schooluniform.hamstersystem.weapon.Calculation;
 
 public class FightEntity{
 	private UUID entityUUID;
@@ -41,12 +44,43 @@ public class FightEntity{
 			attributes.put(EntityAttribute.Armor, 1D);
 	}
 	
+	public FightEntity(FightEntity entity,int[] modsId, int[] modsLevel){
+		this.entityUUID = entity.entityUUID;
+		this.entityType = entity.entityType;
+		this.health = entity.health;
+		this.shield = entity.shield;
+		this.energy = entity.energy;
+		
+		HashMap<EntityAttribute,Double> attributes = new HashMap<>();
+		attributes.putAll(entity.attributes);
+		
+		if(!attributes.containsKey(EntityAttribute.Armor))
+			attributes.put(EntityAttribute.Armor, 1D);
+		
+		MergeMod mod = MergeMod.getEntityMergeMod(modsId, modsLevel);
+		
+		for(Map.Entry<EntityAttribute, Double> entry : mod.getEntityAttributes().entrySet()){
+			if(entry.getKey().getWay() == Calculation.Multiplication){
+				if(attributes.containsKey(entry.getKey()))
+					attributes.replace(entry.getKey(), (1+entry.getValue()/100D)*attributes.get(entry.getKey()));
+			}else if(entry.getKey().getWay() == Calculation.Addition){
+				if(attributes.containsKey(entry.getKey()))
+					attributes.replace(entry.getKey(), entry.getValue()+attributes.get(entry.getKey()));
+				else
+					attributes.put(entry.getKey(), entry.getValue());
+			}
+		}
+		
+		this.attributes = attributes;
+		
+	}
+	
 	public FightEntity(UUID entityUUID, EntityType entityType, double health, double shield, double energy,
 			HashMap<EntityAttribute, Double> attributes) {
 		super();
 		this.entityUUID = entityUUID;
 		this.entityType = entityType;
-		this.health = ((LivingEntity)Bukkit.getEntity(entityUUID)).getHealth();
+		this.health = health;
 		this.shield = shield;
 		this.energy = energy;
 		this.attributes = attributes;

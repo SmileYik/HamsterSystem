@@ -7,8 +7,10 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
 import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
@@ -31,11 +33,26 @@ public class PlayerData extends FightEntity{
 	}
 
 	public FightEntity getFight(){
-		return new FightEntity(this);
+		return new FightEntity(this,modId,modLevel);
+	}
+	
+	public static PlayerData createNewPlayerData(Player p){
+		return new PlayerData(
+				p.getUniqueId(),
+				EntityType.PLAYER,
+				p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue(),
+				100,
+				0,
+				Util.getDefaultEntityAttributes(),new int[10],new int[10],new int[10]);
 	}
 	
 	public static PlayerData  laod(String playerName){
 		File file = new File(HamsterSystem.plugin.getDataFolder()+"/playerdata/"+playerName+".yml");
+		
+		if(!file.exists()){
+			return null;
+		}
+
 		YamlConfiguration data = YamlConfiguration.loadConfiguration(file);
 		
 		HashMap<EntityAttribute,Double> attributes = new HashMap<>();
@@ -58,10 +75,10 @@ public class PlayerData extends FightEntity{
 	public void save(){
 		File file = new File(HamsterSystem.plugin.getDataFolder()+"/playerdata/"+this.getEntity().getName()+".yml");
 		YamlConfiguration data = YamlConfiguration.loadConfiguration(file);
-		data.set("UUID", getEntity().getUniqueId());
+		data.set("UUID", getEntity().getUniqueId().toString());
 		data.set("health", this.getHealth());
 		data.set("shield", getShield());
-		data.set("energu", getEnergy());
+		data.set("energy", getEnergy());
 		for(Map.Entry<EntityAttribute, Double> entry : attributes.entrySet())
 			data.set("attributes."+entry.getKey(), entry.getValue());
 		data.set("mods", Util.modDataToString(modId, modLevel, modExp));

@@ -38,6 +38,12 @@ public enum WeaponTag {
 	HSWMOD,
 	/**
 	 * 弹夹内子弹数量
+	 * key: HSCSize; value: int
 	 */
 	HSCSize,
+	/**
+	 * 换弹物品用完是否会消失
+	 * key: Consumable; value: boolean
+	 */
+	Consumable,
 }

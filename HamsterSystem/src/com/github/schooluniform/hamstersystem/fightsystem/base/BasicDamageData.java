@@ -4,32 +4,37 @@ import java.util.HashMap;
 
 import org.bukkit.entity.LivingEntity;
 
-import com.github.schooluniform.hamstersystem.weapon.WeaponAttribute;
+import com.github.schooluniform.hamstersystem.weapon.Weapon;
 
 public class BasicDamageData {
 	private LivingEntity attacker;
 	private HashMap<DamageType,Double> basicDamages;
-	private HashMap<WeaponAttribute,Double> weaponAttritubes;
+	private Weapon weapon;
 	private DamageType triggerDamage;
 	private double cirtDamage;
+	private double tatolDamage;
 	
 	public BasicDamageData(LivingEntity attacker, HashMap<DamageType, Double> basicDamages,
-			HashMap<WeaponAttribute, Double> weaponAttritubes, DamageType triggerDamage, double cirtDamage) {
+			Weapon weapon, DamageType triggerDamage, double cirtDamage) {
 		super();
 		this.attacker = attacker;
 		this.basicDamages = basicDamages;
-		this.weaponAttritubes = weaponAttritubes;
+		this.weapon = weapon;
 		this.triggerDamage = triggerDamage;
 		this.cirtDamage = cirtDamage;
+		for(double damage : basicDamages.values())
+			tatolDamage+=damage;
 	}
 	
 	public BasicDamageData(LivingEntity attacker) {
 		super();
 		this.attacker = attacker;
 		this.basicDamages = null;
-		this.weaponAttritubes  = null;
+		this.weapon  = null;
 		this.triggerDamage  = null;
 		this.cirtDamage  = 1;
+		for(double damage : basicDamages.values())
+			tatolDamage+=damage;
 	}
 
 	public Double getDamage(DamageType type){
@@ -38,21 +43,15 @@ public class BasicDamageData {
 		return null;
 	}
 	
-	public Double getWeaponAttribute(WeaponAttribute attribute){
-		return weaponAttritubes.get(attribute);
-	}
-	
 	public double getDamage(){
-		double tatolDamage = 0;
-		for(double damage : basicDamages.values())
-			tatolDamage+=damage;
 		return tatolDamage;
 	}
 	
+	public void setDamage(double damage){
+		this.tatolDamage = damage;
+	}
+	
 	public double getDamageWithCirt(){
-		double tatolDamage = 0;
-		for(double damage : basicDamages.values())
-			tatolDamage+=damage;
 		return tatolDamage*cirtDamage;
 	}
 	
@@ -80,13 +79,8 @@ public class BasicDamageData {
 	public void setCirtDamage(double cirtDamage) {
 		this.cirtDamage = cirtDamage;
 	}
-
-	public HashMap<WeaponAttribute, Double> getWeaponAttritubes() {
-		return weaponAttritubes;
-	}
-
-	public void setWeaponAttritubes(HashMap<WeaponAttribute, Double> weaponAttritubes) {
-		this.weaponAttritubes = weaponAttritubes;
+	public Weapon getWeapon(){
+		return weapon;
 	}
 	
 	

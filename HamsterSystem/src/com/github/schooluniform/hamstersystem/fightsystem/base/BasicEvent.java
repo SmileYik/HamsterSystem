@@ -1,14 +1,21 @@
 package com.github.schooluniform.hamstersystem.fightsystem.base;
 
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityRegainHealthEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+
+import com.github.schooluniform.hamstersystem.data.Data;
 
 public class BasicEvent implements Listener{
 	
+	@EventHandler
+	public void onPlayerJoin(PlayerJoinEvent e){
+		Data.addPlayer(e.getPlayer());
+	}
 	
-	public void onHealthRefresh(EntityRegainHealthEvent e){
-		
+	@EventHandler
+	public void onPlayerLeave(PlayerQuitEvent e){
+		Data.removePlayer(e.getPlayer().getName());
 	}
 }

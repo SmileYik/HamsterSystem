@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 
@@ -21,10 +22,39 @@ import com.github.schooluniform.hamstersystem.weapon.WeaponTag;
 public class DamageSystem {
 	
 	public static boolean isWeapon(ItemStack item){
+		if(item == null || item.getType() == Material.AIR)
+			return false;
 		if(Data.NBTTag.contantsNBT(item, WeaponTag.HSWLT.name())&&
 				Data.contansWeapon(Data.NBTTag.getString(item, WeaponTag.HSWLT.name())))
 			return true;
 		return false;
+	}
+	
+	public static Weapon getWeapon(ItemStack item){
+		if(!isWeapon(item))return null;
+		HashMap<WeaponAttribute,Double> weaponAttributes = new HashMap<>();
+		String hswlt = Data.NBTTag.getString(item, WeaponTag.HSWLT.name());
+		int[] modsId = Data.NBTTag.getIntArray(item, WeaponTag.HSWMOD.name());
+		int[] modsLevel = Data.NBTTag.getIntArray(item, WeaponTag.HSWML.name());
+		Weapon weapon = Data.getWeapon(hswlt).clone();
+		MergeMod mod = MergeMod.getWeaponMergeMod(modsId, modsLevel);
+		weaponAttributes.putAll(weapon.getAttributes());
+		
+		for(Map.Entry<WeaponAttribute, Double> entry : mod.getWeaponAttributes().entrySet()){
+			if(entry.getKey().getWay() == Calculation.Multiplication){
+				if(weaponAttributes.containsKey(entry.getKey()))
+					weaponAttributes.replace(entry.getKey(), (1+entry.getValue()/100D)*weaponAttributes.get(entry.getKey()));
+			}else if(entry.getKey().getWay() == Calculation.Addition){
+				if(weaponAttributes.containsKey(entry.getKey()))
+					weaponAttributes.replace(entry.getKey(), entry.getValue()+weaponAttributes.get(entry.getKey()));
+				else
+					weaponAttributes.put(entry.getKey(), entry.getValue());
+			}
+		}
+		
+		weapon.getAttributes().clear();
+		weapon.getAttributes().putAll(weaponAttributes);
+		return weapon;
 	}
 	
 	public static BasicDamageData getBasicDamageData(LivingEntity attacker,ItemStack item){
@@ -128,7 +158,7 @@ public class DamageSystem {
 			triggerDamage = damages.keySet().toArray(new DamageType[damages.size()])[(int)(Math.random()*damages.size())];
 		
 		
-		return new BasicDamageData(attacker, damages, weaponAttributes, triggerDamage, 
+		return new BasicDamageData(attacker, damages, weapon, triggerDamage, 
 				getCritDamage(weaponAttributes.get(WeaponAttribute.Crit_Chance), weaponAttributes.get(WeaponAttribute.Crit_Damage)));
 	}
 	
@@ -141,7 +171,5 @@ public class DamageSystem {
 			return critDamage;
 		return critDamage-1;
 	}
-	
-	
 	
 }

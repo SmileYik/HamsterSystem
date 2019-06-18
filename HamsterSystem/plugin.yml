@@ -5,7 +5,10 @@ author: School_Uniform
 commands:
   hs:
     description: getHamsterSystemHelp
-    usage: /<command> [true/false]
+    usage: /<command> help
+  HamsterSystem:
+    description: getHamsterSystemHelp
+    usage: /<command> help
 permissions: 
   HamsterSystem.Admin: 
     description: Use commands

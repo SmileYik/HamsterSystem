@@ -1,0 +1,52 @@
+on-enable.print-weapon-amount = 加载武器数据数目: {0}.
+on-enable.print-mod-amount = 加载Mod数据数目: {0}.
+on-enable.print-info = 感谢使用本插件, 本插件由 miSkYle 制作!
+on-enable.enable-failed = 本插件不适合此版本服务器, 正在取消加载本插件.
+
+
+
+actionbar.fight.enter-fight = 进入战斗状态!
+actionbar.fight.quit-fight = 离开战斗状态!
+actionbar.fight.enter-heal = 进入治疗状态!
+actionbar.fight.quit-heal = 离开治疗状态!
+
+actionbar.fight.melee.power-enegry = 充能完毕! | 伤害倍率: {0}
+actionbar.fight.melee.no-enegry = 能量不足以支撑充能攻击.
+actionbar.fight.melee.cancel-power-enegry =取消充能.
+
+actionbar.fight.shoot.reloading = 正在重装弹药, 无法射击!
+actionbar.fight.shoot.reload = 重装弹药 | 需用时: {0}s
+actionbar.fight.shoot.ammo-not-fit = 该武器无法使用该弹药.
+actionbar.fight.shoot.reload-no-ammo = 该弹药已用完.
+actionbar.fight.shoot.no-ammo = 无弹药.
+actionbar.fight.shoot.reload-succeed = 装弹完毕.
+actionbar.fight.shoot.reload-failed = 装弹失败.
+
+
+actionbar.fight.effect.be-blast = 遭到爆炸打击
+actionbar.fight.effect.be-cold = 遭到寒冷打击
+actionbar.fight.effect.be-corrosive = 遭到腐蚀打击
+actionbar.fight.effect.be-electricity = 遭到电击
+actionbar.fight.effect.be-gas = 遭到毒气打击
+actionbar.fight.effect.be-heat = 遭到火焰打击
+actionbar.fight.effect.be-impact = 遭到眩晕打击
+actionbar.fight.effect.be-magnetic = 遭到磁力打击
+actionbar.fight.effect.be-puncture = 遭到穿刺打击
+actionbar.fight.effect.be-radiation = 遭到辐射打击
+actionbar.fight.effect.be-slash = 遭到切割
+actionbar.fight.effect.be-toxin = 遭到毒素打击
+actionbar.fight.effect.be-viral = 感染病毒
+
+actionbar.fight.effect.blast = 爆炸吧, {0}!
+actionbar.fight.effect.cold = 冻哭吧, {0}!
+actionbar.fight.effect.corrosive = 腐蚀吧, {0}!
+actionbar.fight.effect.electricity = 不敢上网了吧, {0}!
+actionbar.fight.effect.gas = 被毒气覆盖吧, {0}!
+actionbar.fight.effect.heat = 燃烧吧, {0}!
+actionbar.fight.effect.impact = 眩晕吧, {0}!
+actionbar.fight.effect.magnetic = 减少护盾吧, {0}!
+actionbar.fight.effect.puncture = 穿刺吧, {0}!
+actionbar.fight.effect.radiation = 辐射你, {0}!
+actionbar.fight.effect.slash = 切割你, {0}!
+actionbar.fight.effect.toxin = 中毒吧, {0}!
+actionbar.fight.effect.viral = 去见医生吧, {0}!

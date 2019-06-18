@@ -58,7 +58,7 @@ public class Mod {
 	}
 	
 	public Mod(String fileName){
-		YamlConfiguration mod = YamlConfiguration.loadConfiguration(new File(getDefaultPath()+fileName+".yml"));
+		YamlConfiguration mod = YamlConfiguration.loadConfiguration(new File(getDefaultPath()+"/"+fileName+".yml"));
 		//LinkedList<ElementalDamageType> elementalDamagesRemover = new LinkedList<>();
 		
 		if(mod.contains("base-damages.impact"))damages.put(DamageType.Impact, mod.getDouble("base-damages.impact"));
@@ -73,52 +73,6 @@ public class Mod {
 				Bukkit.getLogger().warning("Mod Setting Wrong! Mod: "+fileName+".yml; Path: base-damages.elemental-damages - "+damage);
 			}
 		}
-		
-/*		elementalDamages.forEach(new BiConsumer<ElementalDamageType, Double>() {
-			int sum = 0;
-			HashMap<ElementalDamageType, Double> index = new HashMap<>();
-			@Override
-			public void accept(ElementalDamageType key, Double value) {
-				index.put(key, value);
-				sum+=key.getID();
-				if(index.size()==2){
-					double damage = 0;
-					DamageType type = null;
-					for(double temp : index.values())
-						damage+=temp/2D;
-					
-					switch (sum) {
-					case 11:
-						type = DamageType.Magnetic;
-						break;
-					case 101:
-						type = DamageType.Blast;
-						break;
-					case 1001:
-						type = DamageType.Viral;
-						break;
-					case 110:
-						type = DamageType.Radiation;
-						break;
-					case 1010:
-						type = DamageType.Corrosive;
-						break;
-					case 1100:
-						type = DamageType.Gas;
-						break;
-					default:
-						break; 
-					}
-					damages.put(type, damage);
-					elementalDamagesRemover.addAll(index.keySet());
-					index.clear();
-					sum = 0;
-				}
-			}
-		});
-		
-		for(ElementalDamageType type:elementalDamagesRemover)
-			elementalDamages.remove(type);*/
 		
 		for(WeaponAttribute key : WeaponAttribute.values())
 			if(mod.contains("weapon-attributes."+key))

@@ -1,0 +1,18 @@
+package com.github.schooluniform.hamstersystem.nms.actionbar;
+
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.entity.Player;
+
+import net.minecraft.server.v1_9_R2.IChatBaseComponent;
+import net.minecraft.server.v1_9_R2.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_9_R2.PacketPlayOutChat;
+
+public class Actionbar_1_9_R2 implements Actionbar{
+
+	@Override
+	public void sendActionbar(Player p, String msg) {
+		IChatBaseComponent icbc = ChatSerializer.a("{\"text\": \"" + msg + "\"}");
+        ((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(icbc, (byte) 2));
+	}
+
+}

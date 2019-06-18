@@ -5,6 +5,7 @@ import java.text.MessageFormat;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
@@ -52,16 +53,19 @@ public class Weapon {
 	}
 	
 	public static Weapon load(String name){
-		YamlConfiguration weapon = YamlConfiguration.loadConfiguration(new File(defaultPath()+name+".yml"));
+		YamlConfiguration weapon = YamlConfiguration.loadConfiguration(new File(defaultPath()+"/"+name+".yml"));
 		HashMap<DamageType, Double> damages = new HashMap<>();
 		HashMap<WeaponAttribute,Double> attributes = new HashMap<>();
 		HashMap<ElementalDamageType, Double> elementalDamages = new HashMap<>();
 		//LinkedList<ElementalDamageType> elementalDamagesRemover = new LinkedList<>();
 		WeaponType weaponType = WeaponType.valueOf(weapon.getString("weapon-type"));
 		
-		if(weapon.contains("base-damages.impact"))damages.put(DamageType.Impact, weapon.getDouble("base-damages.impact"));
-		if(weapon.contains("base-damages.slash"))damages.put(DamageType.Slash, weapon.getDouble("base-damages.slash"));
-		if(weapon.contains("base-damages.puncture"))damages.put(DamageType.Puncture, weapon.getDouble("base-damages.puncture"));
+		if(weapon.contains("base-damages.impact"))
+			damages.put(DamageType.Impact, weapon.getDouble("base-damages.impact"));
+		if(weapon.contains("base-damages.slash"))
+			damages.put(DamageType.Slash, weapon.getDouble("base-damages.slash"));
+		if(weapon.contains("base-damages.puncture"))
+			damages.put(DamageType.Puncture, weapon.getDouble("base-damages.puncture"));
 		
 		for(String damage:weapon.getStringList("base-damages.elemental-damages")){
 			String[] data = damage.split(":");
@@ -132,7 +136,8 @@ public class Weapon {
 					(short) weapon.getInt("launch-amount",1), 
 					weapon.getDouble("range",30), 
 					weapon.getBoolean("gravity",true), 
-					ProjectileType.valueOf(weapon.getString("projectile-type","SNOWBALL")));
+					ProjectileType.valueOf(weapon.getString("projectile-type","SNOWBALL")),
+					weapon.getString("sound",Sound.ENTITY_ARROW_SHOOT.name()));
 		case Melee:
 			return (Weapon)new WeaponMelee(
 					weapon.getString("name"), 
@@ -155,7 +160,7 @@ public class Weapon {
 		switch (weaponType) {
 		case Launcher:
 			WeaponLauncher launcher = (WeaponLauncher) this;
-			return new WeaponLauncher(getName(), getLore(), damages, elementalDamages, attributes, launcher.getLaunchAmount(), launcher.getRange(), launcher.isGravity(), launcher.getProjectileType());
+			return new WeaponLauncher(getName(), getLore(), damages, elementalDamages, attributes, launcher.getLaunchAmount(), launcher.getRange(), launcher.isGravity(), launcher.getProjectileType(),launcher.getSound().name());
 		case Melee:
 			return new WeaponMelee(getName(), getLore(), damages, elementalDamages, attributes);
 		default:

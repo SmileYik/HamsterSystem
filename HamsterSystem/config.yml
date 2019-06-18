@@ -1,3 +1,94 @@
+language: zh_CN
+
 default-player-data:
-  health: 100
+  attributes:
+    Shield: 100
+    ShieldRefresh: 5
+    Armor: 10
+    Energy: 100
+    Health: 100
+   
+default-entity-data:
+  default:
+    mods: 0,0,0;0,0,0;0,0,0;0,0,0;0,0,0;0,0,0;0,0,0;0,0,0;0,0,0;0,0,0
+   #mods: null
+    attributes:
+      Shield: 100
+      ShieldRefresh: 5
+      Armor: 10
+      Energy: 100
+      Health: 100
+  mobs:
+    ZOMBIE:
+      mods: null
+      attributes:
+        Shield: 100
+        ShieldRefresh: 5
+        Armor: 10
+        Energy: 100
+        Health: 100
+      
+fight-effects:
+  impact:
+    duration: 6
+  puncture:
+    duration: 6
+    effect: 30
+    #伤害减少百分比
+  slash:
+    duration: 6
+    effect: 35
+  cold:
+    duration: 6
+    level: 0
+    #缓慢buff等级
+  electricity:
+    duration: 6
+    limit-damage: 100
+    x: 3
+    y: 3
+    z: 3
+  heat:
+    duration: 6
+  toxin:
+    duration: 6
+    level: 0
+    #中毒buff等级
+  blast:
+    duration: 6
+    x: 3
+    y: 3
+    z: 3
+    damage: 4
+  corrosive:
+    effect: 30
+  gas:
+    duration: 6
+    radius: 0.5
+    #radius * 6 必须为整数
+  magnetic:
+    energy-effect: 30
+    shield-effect: 30
+  radiation:
+    duration: 6
+    level: 0
+  viral:
+    effect: 30
+    
   
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    
