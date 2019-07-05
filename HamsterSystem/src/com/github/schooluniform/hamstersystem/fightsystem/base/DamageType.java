@@ -2,49 +2,59 @@ package com.github.schooluniform.hamstersystem.fightsystem.base;
 
 public enum DamageType {
 	/** 打击: 使目标暂停所有行动一定时间*/
-	Impact,
+	Impact("〒"),
 	/** 穿刺: 降低目标的伤害*/
-	Puncture,
+	Puncture("❈"),
 	/** 切割: 使目标在一定时间内肉体每秒都受到伤害*/
-	Slash,
+	Slash("✁"),
 	/** 冰冻: 降低目标速度*/
-	Cold,
+	Cold("☃"),
 	/** 电击: 小范围连锁伤害, 当直接对肉体造成伤害且伤害过高会使目标暂停所有行动一定时间*/
-	Electricity,
+	Electricity("☇"),
 	/** 火焰: 使目标着火*/
-	Heat,
+	Heat("∰"),
 	/** 毒素: 使目标中毒,且在一定时间内肉体每秒都受到伤害*/
-	Toxin,
+	Toxin("☠"),
 	/**
 	 * 爆炸: 范围内的目标都暂停所有行动一定时间<p>
 	 * Cold (冰冻 + Heat (火焰
 	 */
-	Blast,
+	Blast("❁"),
 	/**
 	 * 腐蚀: 永久降低目标护甲 <p>
 	 * Toxin(毒素 + Electricity(电击
 	 */
-	Corrosive,
+	Corrosive("✌"),
 	/**
 	 * 毒气: 范围内的目标获得毒素效果<p>
 	 * Toxin(毒素 + Heat (火焰
 	 */
-	Gas,
+	Gas("☨"),
 	/**
 	 * 磁力: 永久降低护盾上限 <p>
 	 * Cold (冰冻 +  Electricity(电击
 	 */
-	Magnetic,
+	Magnetic("ஐ"),
 	/**
 	 * 辐射: 致盲目标 <p>
 	 * Heat (火焰 + Electricity(电击
 	 */
-	Radiation,
+	Radiation("☢"),
 	/**
 	 * 病毒: 永久减少生命上限 <p>
 	 * Cold (冰冻+ Toxin(毒素
 	 */
-	Viral;
+	Viral("☣");
+	
+	private String sign;
+	
+	DamageType(String sign) {
+		this.sign = sign;
+	}
+	
+	public String getSign() {
+		return sign;
+	}
 	
 	public static ElementalDamageType[] getElementalDamage(DamageType type){
 		switch (type) {

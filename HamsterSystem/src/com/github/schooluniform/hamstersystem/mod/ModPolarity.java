@@ -13,6 +13,10 @@ public enum ModPolarity {
        this.type=type;
     }
     
+    /**
+     * 获取极性类型
+     * @return
+     */
     public int getType(){
     	return type;
     }

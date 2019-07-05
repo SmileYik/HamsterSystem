@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
@@ -17,8 +18,9 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.schooluniform.hamstersystem.I18n;
-import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.data.Data;
 import com.github.schooluniform.hamstersystem.entity.EntityAttribute;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
 import com.github.schooluniform.hamstersystem.fightsystem.base.BasicDamageData;
 import com.github.schooluniform.hamstersystem.fightsystem.effect.BlastEffect;
 import com.github.schooluniform.hamstersystem.fightsystem.effect.ColdEffect;
@@ -61,6 +63,7 @@ public class DamageEvent implements Listener{
 			}
 			
 			if(!DamageSystem.isWeapon(weapon)){
+				System.out.println("a");
 				e.setDamage(getFinalDamage(e.getDamage(), defander));
 				return;
 			}
@@ -88,8 +91,10 @@ public class DamageEvent implements Listener{
 			triggerDamage(bdd,defander);
 			double finalDamage = getFinalDamage(bdd.getDamageWithCirt(), defander);
 			e.setDamage(finalDamage);
-			damager.sendMessage("Damage: "+finalDamage+" Shield: "+defander.getShield()+" Health: "+defander.getEntity().getHealth()) ;
-			
+			//damager.sendMessage("Damage: "+finalDamage+" Shield: "+defander.getShield()+" Health: "+defander.getEntity().getHealth()) ;
+			if(damager instanceof Player) {				
+				Data.actionbar.sendActionbar((Player)damager, defander.getUpdateSign());
+			}
 		}else{
 			if(ShootSystem.getLaunchedProjectile().containsKey(e.getDamager().getEntityId())){
 				BasicDamageData bdd = ShootSystem.getLaunchedProjectile().get(e.getDamager().getEntityId());
@@ -106,8 +111,10 @@ public class DamageEvent implements Listener{
 				e.setDamage(finalDamage);
 				ShootSystem.getLaunchedProjectile().remove(e.getDamager().getEntityId());
 				
-				bdd.getAttacker().sendMessage("Damage: "+finalDamage+" Shield: "+defander.getShield()+" Health: "+defander.getEntity().getHealth()) ;
-				
+				//bdd.getAttacker().sendMessage("Damage: "+finalDamage+" Shield: "+defander.getShield()+" Health: "+defander.getEntity().getHealth()) ;
+				if(bdd.getAttacker() instanceof Player) {			
+					Data.actionbar.sendActionbar((Player)bdd.getAttacker(), defander.getUpdateSign());
+				}
 			}
 		}
 		

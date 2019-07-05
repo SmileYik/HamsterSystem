@@ -1,7 +1,9 @@
-package com.github.schooluniform.hamstersystem.data.entity;
+package com.github.schooluniform.hamstersystem.entity;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -14,7 +16,7 @@ import org.bukkit.entity.Player;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
 import com.github.schooluniform.hamstersystem.data.Data;
-import com.github.schooluniform.hamstersystem.entity.EntityAttribute;
+import com.github.schooluniform.hamstersystem.fightsystem.base.DamageType;
 import com.github.schooluniform.hamstersystem.mod.MergeMod;
 import com.github.schooluniform.hamstersystem.util.Util;
 import com.github.schooluniform.hamstersystem.weapon.Calculation;
@@ -26,6 +28,7 @@ public class FightEntity{
 	private double health;
 	private double shield ;
 	private double energy;
+	private List<DamageType> damageSigns = new LinkedList<>();
 	protected HashMap<EntityAttribute, Double> attributes;
 	
 	//Clone
@@ -121,6 +124,14 @@ public class FightEntity{
 		return entityType;
 	}
 	
+	public void setEntityType(EntityType type) {
+		this.entityType = type;
+	}
+	
+	public void setEntityUUID(UUID uuid) {
+		this.entityUUID = uuid;
+	}
+	
 	public double getAttribute(EntityAttribute attribute){
 		if(!attributes.containsKey(attribute))return 0;
 		return attributes.get(attribute);
@@ -166,5 +177,53 @@ public class FightEntity{
 		this.energy += energy;
 	}
 	
+	public void setDamageSign(DamageType type,boolean enable) {
+		if(enable) {
+			if(!damageSigns.contains(type))damageSigns.add(type);
+		}else {
+			if(damageSigns.contains(type))damageSigns.remove(type);
+		}
+	}
 	
+	public String getUpdateSign() {
+		//"||||||||||||||||||||"
+		//蓝->红->黑
+		
+		{
+			String sign = "||||||||||||||||||||";
+			LivingEntity entity = getEntity();
+			String name = entity.getCustomName();
+			if(name == null) {
+				name = entity.getName();
+			}
+			if(shield > 0) {
+				int index = (int)(shield/(attributes.get(EntityAttribute.Shield)/sign.length()));
+				if(index < sign.length()) {
+					sign = "§b"+sign.substring(0, index)+"§c"+sign.substring(index);					
+				}else {
+					sign = "§b"+sign;					
+				}
+			}else {
+				int index = (int)(entity.getHealth()/(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()/sign.length()));
+				if(index < sign.length()) {
+					sign = "§c"+sign.substring(0, index)+"§8"+sign.substring(index);					
+				}else {
+					sign = "§c"+sign;					
+				}
+			}
+			
+			if(!damageSigns.isEmpty()) {
+				sign+=" §c(";
+				try {
+					for(DamageType type : damageSigns) {
+						sign+=type.getSign();
+					}					
+				} catch (Exception e) {
+					
+				}
+				sign+="§c)";
+			}
+			return name+": "+sign;
+		}
+	}
 }

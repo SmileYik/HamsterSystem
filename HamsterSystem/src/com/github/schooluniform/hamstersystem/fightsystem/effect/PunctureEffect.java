@@ -8,7 +8,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
-import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
 
 public class PunctureEffect implements Runnable{
 	private static int duration = 6;

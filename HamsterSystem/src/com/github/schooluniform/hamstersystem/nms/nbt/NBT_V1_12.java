@@ -25,7 +25,7 @@ public class NBT_V1_12 implements NBTItem{
 			nbttc.setDouble(key, (double)value);
 		else if(value instanceof Boolean)
 			nbttc.setBoolean(key, (boolean)value);
-		else if(value instanceof Integer[])
+		else if(value instanceof int[])
 			nbttc.setIntArray(key, (int[]) value);
 		else if(value instanceof Byte)
 			nbttc.setByte(key, (byte) value);

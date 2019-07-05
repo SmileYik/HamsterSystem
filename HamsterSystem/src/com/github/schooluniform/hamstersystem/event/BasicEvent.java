@@ -1,4 +1,4 @@
-package com.github.schooluniform.hamstersystem.fightsystem.base;
+package com.github.schooluniform.hamstersystem.event;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;

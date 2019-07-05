@@ -9,9 +9,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.schooluniform.hamstersystem.data.Data;
 import com.github.schooluniform.hamstersystem.data.PlayerData;
+import com.github.schooluniform.hamstersystem.event.BasicEvent;
+import com.github.schooluniform.hamstersystem.event.InventoryEvent;
 import com.github.schooluniform.hamstersystem.fightsystem.DamageEvent;
 import com.github.schooluniform.hamstersystem.fightsystem.ShootSystem;
-import com.github.schooluniform.hamstersystem.fightsystem.base.BasicEvent;
+import com.github.schooluniform.hamstersystem.gui.ModGui;
+import com.github.schooluniform.hamstersystem.mod.Mod;
+import com.github.schooluniform.hamstersystem.mod.ModTag;
 import com.github.schooluniform.hamstersystem.weapon.Weapon;
 import com.github.schooluniform.hamstersystem.weapon.WeaponAttribute;
 import com.github.schooluniform.hamstersystem.weapon.WeaponLauncher;
@@ -35,6 +39,7 @@ public class HamsterSystem extends JavaPlugin{
 		this.getServer().getPluginManager().registerEvents(new ShootSystem(), this);
 		this.getServer().getPluginManager().registerEvents(new DamageEvent(), this);
 		this.getServer().getPluginManager().registerEvents(new BasicEvent(), this);
+		this.getServer().getPluginManager().registerEvents(new InventoryEvent(), this);
 		//this.getServer().getScheduler().runTaskTimerAsynchronously(this, new FightSystem(),0,20);
 		//this.getServer().getScheduler().runTaskTimerAsynchronously(this, new HealTask(),0,20);
 		
@@ -63,7 +68,9 @@ public class HamsterSystem extends JavaPlugin{
 	}
 	
 	
-	
+	public static Player getPlayer(String playerName) {
+		return HamsterSystem.getPlayer(playerName);
+	}
 	
 	
 	
@@ -92,6 +99,8 @@ public class HamsterSystem extends JavaPlugin{
 					PlayerData pd = Data.getPlayerData(sender.getName());
 					pd.setEnergy(100);
 					
+				}else if(args[0].equalsIgnoreCase("demo2")) {
+					ModGui.openGuiWeapon((Player) sender);
 				}
 				break;
 			case 2:
@@ -111,15 +120,37 @@ public class HamsterSystem extends JavaPlugin{
 						Weapon w = Data.getWeapon(args[1]);
 						ItemStack weapon = p.getInventory().getItemInMainHand();
 						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWLT.name(), args[1]);
-						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWInfo.name(), new int[10]);
+//						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWInfo.name(), new int[10]);
 						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWEL.name(), new int[]{0,0});
-						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWMOD.name(), new int[9]);
-						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWME.name(), new int[9]);
+//						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWMOD.name(), new int[9] );
+//						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWME.name(), new int[9] );
+//						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWML.name(), new int[9] );
 						if(w instanceof WeaponLauncher){
 							weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWClip.name(), w.getAttribute(WeaponAttribute.Clip).intValue());
 							weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSCSize.name(), 0);							
 						}
 						p.getInventory().setItemInMainHand(weapon);
+					}
+				}else if(args[0].equalsIgnoreCase("setMod") && (sender instanceof Player) &&
+						(sender.isOp() || sender.hasPermission("HamsterSystem.Commands"))){
+					Player p = (Player)sender;
+					if(!Data.contansMod(args[1])){
+						sender.sendMessage("Mod "+args[1]+" is Not Find");
+						return true;
+					}
+					if(p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() == Material.AIR){
+						sender.sendMessage("You have nothing in your hand");
+						return true;
+					}
+					//Set Weapon
+					{
+//						ItemStack mod = p.getInventory().getItemInMainHand().clone();
+						Mod modData = Data.getMod(args[1]);
+//						mod = Data.NBTTag.addNBT(mod, ModTag.HSMINFO.name(), modData.getPolarity().getType());
+//						mod = Data.NBTTag.addNBT(mod, ModTag.HSMLE.name(),new int[] {0,0});
+//						mod = Data.NBTTag.addNBT(mod, ModTag.HSMLT.name(), args[1]);
+						ItemStack mod = modData.getItem(0, 0, modData.getPolarity().getType());
+						p.getInventory().setItemInMainHand(mod);
 					}
 				}
 				break;

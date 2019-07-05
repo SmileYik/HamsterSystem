@@ -9,7 +9,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
-import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.fightsystem.base.DamageType;
 
 public class ImpactEffect implements Runnable{
 	private static int duration = 6;
@@ -36,6 +37,7 @@ public class ImpactEffect implements Runnable{
 			try{
 				entry.getValue().setValue(entry.getValue().getValue()-1);
 				if(entry.getValue().getValue()<=0){
+					entry.getValue().getKey().setDamageSign(DamageType.Impact, false);
 					if(!(entry.getValue().getKey() instanceof Player)){
 						entry.getValue().getKey().getEntity().setAI(true);
 					}
@@ -45,6 +47,7 @@ public class ImpactEffect implements Runnable{
 					entry.getValue().getKey().getEntity().setAI(false);
 				}
 			}catch(Exception e){
+				entry.getValue().getKey().setDamageSign(DamageType.Impact, false);
 				iterator.remove();
 				impactEntity.remove(entry.getKey());
 			}
@@ -59,6 +62,7 @@ public class ImpactEffect implements Runnable{
 	 * @param time 对持续时间进行修改(百分数) (不修改填0)
 	 */
 	public static void impact(FightEntity entity,double time){
+		entity.setDamageSign(DamageType.Impact, true);
 		double finalTime = ImpactEffect.duration * (1+time/100D);
 		if(impactEntity.containsKey(entity.getEntity().getEntityId())){
 			impactEntity.replace(entity.getEntity().getEntityId(), 

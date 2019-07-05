@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
 import com.github.schooluniform.hamstersystem.I18n;
+import com.github.schooluniform.hamstersystem.entity.Mob;
 import com.github.schooluniform.hamstersystem.fightsystem.effect.BlastEffect;
 import com.github.schooluniform.hamstersystem.fightsystem.effect.ColdEffect;
 import com.github.schooluniform.hamstersystem.fightsystem.effect.CorrosiveEffect;
@@ -32,12 +33,13 @@ public class Data {
 	public static NBTItem NBTTag;
 	public static Actionbar actionbar;
 	
+	private static String modGuiTitle;
+	
 	private static HashMap<String,Weapon>weapons = new HashMap<>();
 	private static HashMap<Integer,Mod> mods = new HashMap<>();
 	private static HashMap<String, Integer> modsByName = new HashMap<>();
-	
+	private static HashMap<String,Mob> mobs = new HashMap<>();
 	private static HashMap<String,PlayerData> playerDatas = new HashMap<>();
-	
 	
 	private static boolean enablePrefixInTitle;
 	
@@ -106,8 +108,13 @@ public class Data {
 		
 		//Other
 		{
+			modGuiTitle = config.getString("gui.mod-gui.title");
 			loadWeapons(Weapon.defaultPath());
 			HamsterSystem.plugin.getLogger().info(I18n.tr("on-enable.print-weapon-amount",weapons.size()));
+			loadMods(Mod.getDefaultPath());
+			HamsterSystem.plugin.getLogger().info(I18n.tr("on-enable.print-mod-amount", mods.size()));
+			loadMobs(Mob.getDefaultPath());
+			HamsterSystem.plugin.getLogger().info(I18n.tr("on-enable.print-mob-amount", mobs.size()));
 		}
 		
 		
@@ -124,9 +131,34 @@ public class Data {
 		}
 	}
 	
+	private static void loadMods(File directroy){
+		for(File f : directroy.listFiles()){
+			if(f.isDirectory()){
+				loadMods(f);
+			}else if(f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf('.')).equalsIgnoreCase(".yml")){
+				addMod("/"+f.getAbsolutePath().substring(Mod.getDefaultPath().getAbsolutePath().length(),f.getAbsolutePath().lastIndexOf('.')));
+			}
+		}
+	}
+	
+	private static void loadMobs(File directroy){
+		for(File f : directroy.listFiles()){
+			if(f.isDirectory()){
+				loadMobs(f);
+			}else if(f.getAbsolutePath().substring(f.getAbsolutePath().lastIndexOf('.')).equalsIgnoreCase(".yml")){
+				addMob("/"+f.getAbsolutePath().substring(Mob.getDefaultPath().getAbsolutePath().length(),f.getAbsolutePath().lastIndexOf('.')));
+			}
+		}
+	}
+	
 	public static void addWeapon(String name){
 		Weapon w = Weapon.load(name);
 		weapons.put(w.getName(),w );
+	}
+	
+	public static void addMob(String fileName) {
+		Mob mob = Mob.getMob(fileName);
+		mobs.put(mob.getName(), mob);
 	}
 	
 	public static void addPlayer(String playerName){
@@ -161,6 +193,12 @@ public class Data {
 		return weapons.containsKey(name);
 	}
 	
+	public static void addMod(String fileName) {
+		Mod mod = new Mod(fileName);
+		mods.put(mod.getId(), mod);
+		modsByName.put(mod.getName(), mod.getId());
+	}
+	
 	public static Mod getMod(String name){
 		return mods.get(modsByName.get(name));
 	}
@@ -179,5 +217,9 @@ public class Data {
 	
 	public static boolean isEnablePrefixInTitle(){
 		return enablePrefixInTitle;
+	}
+	
+	public static String getModGuiTitle() {
+		return modGuiTitle;
 	}
 }

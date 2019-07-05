@@ -1,6 +1,6 @@
 package com.github.schooluniform.hamstersystem.fightsystem.effect;
 
-import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
 
 public class HeatEffect {
 	private static int duration = 6;

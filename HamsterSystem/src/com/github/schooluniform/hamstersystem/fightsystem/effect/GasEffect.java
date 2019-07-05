@@ -13,7 +13,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
-import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
 import com.github.schooluniform.hamstersystem.fightsystem.FightSystem;
 
 public class GasEffect implements Runnable{

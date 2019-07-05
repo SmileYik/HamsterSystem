@@ -4,7 +4,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
-import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
 import com.github.schooluniform.hamstersystem.fightsystem.FightSystem;
 
 public class BlastEffect {

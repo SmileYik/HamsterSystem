@@ -1,19 +1,19 @@
 package com.github.schooluniform.hamstersystem.mod;
 
 public enum ModType {
-	Melee("Melee"),
-	Launcher("Launcher"),
-	Display("Display"),
-	Player("Player");
+	Melee(1),
+	Launcher(2),
+	Display(3),
+	Player(4);
 	
-	private String type ;
+	private int ID ;
 
-    private ModType(String type) {
-       this.type=type;
+    private ModType(int ID) {
+       this.ID=ID;
     }
     
-    @Override
-    public String toString() {
-        return type;
+    public int getID() {
+    	return ID;
     }
+    
 }

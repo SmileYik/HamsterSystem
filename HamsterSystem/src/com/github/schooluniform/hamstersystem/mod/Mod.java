@@ -2,13 +2,17 @@ package com.github.schooluniform.hamstersystem.mod;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
+import com.github.schooluniform.hamstersystem.I18n;
+import com.github.schooluniform.hamstersystem.data.Data;
 import com.github.schooluniform.hamstersystem.entity.EntityAttribute;
 import com.github.schooluniform.hamstersystem.fightsystem.base.DamageType;
 import com.github.schooluniform.hamstersystem.fightsystem.base.ElementalDamageType;
@@ -26,21 +30,22 @@ public class Mod {
 	private String fileName;
 	private String name;
 	private String lore;
+	private ItemStack item;
 	private ModPolarity polarity;
 	private ModRarity rarity;
 	private ModType type;
 	private String typeDisplay = null;
-	private HashMap<DamageType, Double> damages;
-	private HashMap<ElementalDamageType, Double> elementalDamages;
-	private HashMap<WeaponAttribute,Double> weaponAttributes;
-	private HashMap<EntityAttribute,Double> entityAttritubes;
+	private HashMap<DamageType, Double> damages = new HashMap<DamageType, Double>();
+	private HashMap<ElementalDamageType, Double> elementalDamages = new HashMap<ElementalDamageType, Double>();
+	private HashMap<WeaponAttribute,Double> weaponAttributes = new HashMap<WeaponAttribute, Double>();
+	private HashMap<EntityAttribute,Double> entityAttritubes = new HashMap<EntityAttribute, Double>();
 	
 	
 	
 	protected Mod(String fileName,int id, int basePoint, String name, String lore, ModPolarity polarity, ModRarity rarity, ModType type,
 			String typeDisplay, HashMap<DamageType, Double> damages,
 			HashMap<ElementalDamageType, Double> elementalDamages, HashMap<WeaponAttribute, Double> weaponAttributes,
-			HashMap<EntityAttribute, Double> entityAttritubes) {
+			HashMap<EntityAttribute, Double> entityAttritubes,ItemStack item) {
 		super();
 		this.fileName = fileName;
 		this.id = id;
@@ -55,22 +60,25 @@ public class Mod {
 		this.elementalDamages = elementalDamages;
 		this.weaponAttributes = weaponAttributes;
 		this.entityAttritubes = entityAttritubes;
+		this.item = item;
 	}
 	
 	public Mod(String fileName){
 		YamlConfiguration mod = YamlConfiguration.loadConfiguration(new File(getDefaultPath()+"/"+fileName+".yml"));
 		//LinkedList<ElementalDamageType> elementalDamagesRemover = new LinkedList<>();
-		
-		if(mod.contains("base-damages.impact"))damages.put(DamageType.Impact, mod.getDouble("base-damages.impact"));
-		if(mod.contains("base-damages.slash"))damages.put(DamageType.Slash, mod.getDouble("base-damages.slash"));
-		if(mod.contains("base-damages.puncture"))damages.put(DamageType.Puncture, mod.getDouble("base-damages.puncture"));
+		if(mod.contains("base-damages.impact"))
+			damages.put(DamageType.Impact, mod.getDouble("base-damages.impact"));
+		if(mod.contains("base-damages.slash"))
+			damages.put(DamageType.Slash, mod.getDouble("base-damages.slash"));
+		if(mod.contains("base-damages.puncture"))
+			damages.put(DamageType.Puncture, mod.getDouble("base-damages.puncture"));
 		
 		for(String damage:mod.getStringList("base-damages.elemental-damages")){
 			String[] data = damage.split(":");
 			try{
 				elementalDamages.put(ElementalDamageType.valueOf(data[0]), Double.parseDouble(data[1]));				
 			}catch (Exception e) {
-				Bukkit.getLogger().warning("Mod Setting Wrong! Mod: "+fileName+".yml; Path: base-damages.elemental-damages - "+damage);
+				HamsterSystem.plugin.getLogger().warning("Mod Setting Wrong! Mod: "+fileName+".yml; Path: base-damages.elemental-damages - "+damage);
 			}
 		}
 		
@@ -85,12 +93,13 @@ public class Mod {
 		this.fileName = fileName;
 		this.id = mod.getInt("id");
 		this.basePoint = mod.getInt("mod-point",1);
-		this.name = mod.getString("name","Mod");
+		this.name = mod.getString("name");
 		this.lore = mod.getString("lore","Mod");
 		this.polarity = ModPolarity.valueOf(mod.getString("polarity", ModPolarity.Null.name()));
 		this.rarity = ModRarity.valueOf(mod.getString("rarity",ModRarity.Comment.name()));
 		this.type = ModType.valueOf(mod.getString("mod-type",ModType.Display.name()));
 		this.typeDisplay = mod.getString("mod-type-display");
+		this.item = mod.getItemStack("item");
 	}
 	
 	public Mod(Mod mod){
@@ -107,7 +116,7 @@ public class Mod {
 		this.rarity = mod.rarity;
 		this.type = mod.type;
 		this.typeDisplay = mod.typeDisplay;
-		
+		this.item = mod.item;
 	}
 	
 	
@@ -163,6 +172,25 @@ public class Mod {
 		
 	}
 	
+	public ItemStack getItem(int level,int exp,int polarityID) {
+		ItemStack item = this.item.clone();
+		ItemMeta im = item.getItemMeta();
+		im.setLore(Arrays.asList(
+				MessageFormat.format(
+						lore, 
+						I18n.tr("mod.polarity."+polarity.getType()),
+						level,
+						I18n.tr("mod.rarity."+rarity.getLevel()),
+						type.getID()==3?typeDisplay:I18n.tr("mod.type."+type.getID()),
+						level+basePoint
+				).split(";")));
+		item.setItemMeta(im);
+		item = Data.NBTTag.addNBT(item, ModTag.HSMINFO.name(), polarityID);
+		item = Data.NBTTag.addNBT(item, ModTag.HSMLE.name(), new int[] {level,exp});
+		item = Data.NBTTag.addNBT(item, ModTag.HSMLT.name(), name);
+		return item;
+	}
+	
 	public Double getDamage(DamageType type){
 		return damages.get(type);
 	}
@@ -187,9 +215,6 @@ public class Mod {
 	}
 	public String getLore() {
 		return lore;
-	}
-	public String getLore(int level,int exp,String polarity) {
-		return MessageFormat.format(lore, level,exp,polarity,level+basePoint);
 	}
 	public ModPolarity getPolarity() {
 		return polarity;

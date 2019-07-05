@@ -11,8 +11,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
-import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
 import com.github.schooluniform.hamstersystem.fightsystem.FightSystem;
+import com.github.schooluniform.hamstersystem.fightsystem.base.DamageType;
 
 public class ElectricityEffect implements Runnable{
 	private static int duration = 6;
@@ -46,6 +47,7 @@ public class ElectricityEffect implements Runnable{
 			try{
 				entry.getValue().setValue(entry.getValue().getValue()-1);
 				if(entry.getValue().getValue()<=0){
+					entry.getKey().setDamageSign(DamageType.Electricity, false);
 					iterator.remove();
 					electricityEntity.remove(entry.getKey());
 				}else{
@@ -95,6 +97,7 @@ public class ElectricityEffect implements Runnable{
 			ImpactEffect.impact(entity, time);
 		}else*/{
 			time = duration*(1+time/100D);
+			entity.setDamageSign(DamageType.Electricity, true);
 			if(electricityEntity.containsKey(entity)){
 				electricityEntity.replace(entity, new AbstractMap.SimpleEntry<Double,Integer>(damage, (int) time));
 			}else{

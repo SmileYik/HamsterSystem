@@ -14,6 +14,7 @@ import com.github.schooluniform.hamstersystem.fightsystem.base.BasicDamageData;
 import com.github.schooluniform.hamstersystem.fightsystem.base.DamageType;
 import com.github.schooluniform.hamstersystem.fightsystem.base.ElementalDamageType;
 import com.github.schooluniform.hamstersystem.mod.MergeMod;
+import com.github.schooluniform.hamstersystem.mod.ModTag;
 import com.github.schooluniform.hamstersystem.weapon.Calculation;
 import com.github.schooluniform.hamstersystem.weapon.Weapon;
 import com.github.schooluniform.hamstersystem.weapon.WeaponAttribute;
@@ -28,6 +29,21 @@ public class DamageSystem {
 				Data.contansWeapon(Data.NBTTag.getString(item, WeaponTag.HSWLT.name())))
 			return true;
 		return false;
+	}
+	
+	public static boolean isMod(ItemStack item) {
+		if(item == null || item.getType() == Material.AIR)
+			return false;
+		if(Data.NBTTag.contantsNBT(item, ModTag.HSMLE.name())&&
+				Data.contansMod(Data.NBTTag.getString(item, ModTag.HSMLT.name())) &&
+				Data.NBTTag.contantsNBT(item, ModTag.HSMINFO.name()))
+			return true;
+		return false;
+	}
+	
+	public static Weapon getBasicWeapon(ItemStack item) {
+		if(!isWeapon(item))return null;
+		return Data.getWeapon(Data.NBTTag.getString(item, WeaponTag.HSWLT.name())).clone();
 	}
 	
 	public static Weapon getWeapon(ItemStack item){
@@ -171,5 +187,6 @@ public class DamageSystem {
 			return critDamage;
 		return critDamage-1;
 	}
+
 	
 }

@@ -1,7 +1,8 @@
 package com.github.schooluniform.hamstersystem.fightsystem.effect;
 
-import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
 import com.github.schooluniform.hamstersystem.entity.EntityAttribute;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.fightsystem.base.DamageType;
 
 public class MagneticEffect {
 	/**
@@ -22,6 +23,7 @@ public class MagneticEffect {
 	public static void magnetic(FightEntity entity){
 		entity.setAttribute(EntityAttribute.Shield, entity.getAttribute(EntityAttribute.Shield)*(1-shield/100D));
 		entity.setEnergy(entity.getEnergy()*(1-energyEffect/100D));
+		entity.setDamageSign(DamageType.Magnetic, true);
 	}
 
 }

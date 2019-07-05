@@ -1,8 +1,8 @@
 on-enable.print-weapon-amount = 加载武器数据数目: {0}.
 on-enable.print-mod-amount = 加载Mod数据数目: {0}.
+on-enable.print-mob-amount = 加载怪物数据数目: {0}
 on-enable.print-info = 感谢使用本插件, 本插件由 miSkYle 制作!
 on-enable.enable-failed = 本插件不适合此版本服务器, 正在取消加载本插件.
-
 
 
 actionbar.fight.enter-fight = 进入战斗状态!
@@ -50,3 +50,53 @@ actionbar.fight.effect.radiation = 辐射你, {0}!
 actionbar.fight.effect.slash = 切割你, {0}!
 actionbar.fight.effect.toxin = 中毒吧, {0}!
 actionbar.fight.effect.viral = 去见医生吧, {0}!
+
+mod.rarity.1 = 常见
+mod.rarity.2 = 罕见
+mod.rarity.3 = 稀有
+mod.type.1 = 近战限定
+mod.type.2 = 远程限定
+mod.type.4 = 玩家限定
+mod.polarity.0 = 无极性
+mod.polarity.1 = 阿塔克
+mod.polarity.2 = 德凡瑟无
+mod.polarity.3 = 塔克提可
+mod.polarity.4 = 奥克斯莱瑞
+
+mod-gui.item-is-not-weapon = 你手上的物品不是有效的武器!
+mod-gui.info-sign = 属性信息
+
+damage-type.Impact = 打击
+damage-type.Puncture = 穿刺
+damage-type.Slash = 切割
+damage-type.Cold = 冷冻
+damage-type.Electricity = 电击
+damage-type.Heat = 火焰
+damage-type.Toxin = 毒素
+damage-type.Blast = 爆炸
+damage-type.Corrosive = 腐蚀
+damage-type.Gas = 毒气
+damage-type.Magnetic = 磁力
+damage-type.Radiation = 辐射
+damage-type.Viral = 病毒
+weapon-attribute.Crit_Damage = 暴击倍数
+weapon-attribute.Crit_Chance = 暴击几率
+weapon-attribute.Trigger_Adds = 触发几率
+weapon-attribute.Impact_Over = 贯穿几率
+weapon-attribute.Attack_Interval = 攻击间隔
+weapon-attribute.Clip = 弹夹
+weapon-attribute.Precise_X = X轴精准
+weapon-attribute.Precise_Y = Y轴精准
+weapon-attribute.Precise_Z = Z轴精准
+weapon-attribute.Rate_of_Fire = 射速
+weapon-attribute.Recoil = 后坐力
+weapon-attribute.Reload_Speed = 换弹时长
+weapon-attribute.Charging_Efficiency = 充能效率
+weapon-attribute.Charging_Damage = 充能倍率
+
+
+
+
+
+
+

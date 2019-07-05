@@ -13,8 +13,8 @@ import org.bukkit.entity.EntityType;
 import com.github.schooluniform.hamstersystem.HamsterSystem;
 import com.github.schooluniform.hamstersystem.I18n;
 import com.github.schooluniform.hamstersystem.data.Data;
-import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
 import com.github.schooluniform.hamstersystem.entity.EntityAttribute;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
 
 public class HealTask implements Runnable{
 	private static int leaveHealTime = 5;
@@ -51,6 +51,7 @@ public class HealTask implements Runnable{
 				I18n.senda(entry.getValue().getKey().getEntity(), "actionbar.fight.quit-heal");
 				iterator.remove();
 				fightData.remove(entry.getKey());
+				continue;
 			}
 		}
 	}

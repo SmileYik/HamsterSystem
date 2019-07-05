@@ -3,7 +3,7 @@ package com.github.schooluniform.hamstersystem.fightsystem.effect;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
 
 public class ColdEffect {
 	private static int duration = 6;

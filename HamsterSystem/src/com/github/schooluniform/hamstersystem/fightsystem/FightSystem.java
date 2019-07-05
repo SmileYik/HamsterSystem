@@ -11,7 +11,7 @@ import org.bukkit.entity.LivingEntity;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
 import com.github.schooluniform.hamstersystem.I18n;
-import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
 
 
 public class FightSystem implements Runnable{

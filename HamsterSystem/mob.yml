@@ -1,4 +1,10 @@
+name: test
+mods: null
+shield: 0
+health: 100
+energy: 100
 
-
-attributes:
-  xxx: 12
+attributes: 
+  Armor: 1
+minecraft-attributes:
+  A: 1

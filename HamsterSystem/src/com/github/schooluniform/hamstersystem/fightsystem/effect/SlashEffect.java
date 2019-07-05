@@ -8,7 +8,8 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
-import com.github.schooluniform.hamstersystem.data.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.fightsystem.base.DamageType;
 
 public class SlashEffect implements Runnable{
 	private static int duration = 6;
@@ -38,10 +39,12 @@ public class SlashEffect implements Runnable{
 				entry.getKey().getEntity().damage(entry.getValue().getKey());
 				entry.getValue().setValue(entry.getValue().getValue()-1);
 				if(entry.getValue().getValue() <= 0){
+					entry.getKey().setDamageSign(DamageType.Slash, false);
 					iterator.remove();
 					slashEntity.remove(entry.getKey());
 				}
 			}catch(Exception e){
+				entry.getKey().setDamageSign(DamageType.Slash, false);
 				iterator.remove();
 				slashEntity.remove(entry.getKey());
 			}
@@ -58,6 +61,7 @@ public class SlashEffect implements Runnable{
 	public static void slash(FightEntity entity, double damage, double time){
 		damage *= effect/100D;
 		double finalTime = SlashEffect.duration * (1+time/100D);
+		entity.setDamageSign(DamageType.Slash, true);
 		if(slashEntity.containsKey(entity)){
 			slashEntity.replace(entity, new AbstractMap.SimpleEntry<Double,Integer>(damage, (int)finalTime));
 		}else{
