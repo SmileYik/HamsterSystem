@@ -1,9 +1,7 @@
 package com.github.schooluniform.hamstersystem.event.inventorytask;
 
-import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -17,11 +15,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import com.github.schooluniform.hamstersystem.HamsterSystem;
 import com.github.schooluniform.hamstersystem.I18n;
 import com.github.schooluniform.hamstersystem.data.Data;
+import com.github.schooluniform.hamstersystem.entity.EntityAttribute;
+import com.github.schooluniform.hamstersystem.entity.FightEntity;
 import com.github.schooluniform.hamstersystem.fightsystem.DamageSystem;
-import com.github.schooluniform.hamstersystem.fightsystem.base.BasicDamageData;
 import com.github.schooluniform.hamstersystem.fightsystem.base.DamageType;
 import com.github.schooluniform.hamstersystem.gui.ModGui;
-import com.github.schooluniform.hamstersystem.mod.MergeMod;
 import com.github.schooluniform.hamstersystem.util.ModUtils;
 import com.github.schooluniform.hamstersystem.util.Util;
 import com.github.schooluniform.hamstersystem.weapon.Weapon;
@@ -50,26 +48,31 @@ public class ModTask implements Runnable{
 	public void run() {
 		Inventory inv = p.getOpenInventory().getTopInventory();
 		if(inv.getTitle().equalsIgnoreCase(Data.getModGuiTitle())) {
-			boolean changed = false;
+			boolean changed = true;
+//			int index = 0;
+//			for(int slot : ModGui.getModSlots()) {
+//				ItemStack mod = inv.getItem(slot);
+//				if((mod != null && mods[index] == null) ||
+//						(mod == null && mods[index] != null) ||
+//						(mod != null && mods[index] != null && !mod.equals(mods[index]))) {
+//					mods[index] = mod;
+//					changed = true;
+//					continue;
+//				}
+//				index ++;
+//			}
 			int index = 0;
 			for(int slot : ModGui.getModSlots()) {
-				ItemStack mod = inv.getItem(slot);
-				if((mod != null && mods[index] == null) ||
-						(mod == null && mods[index] != null) ||
-						(mod != null && mods[index] != null && !mod.equals(mods[index]))) {
-					mods[index] = mod;
-					changed = true;
-					continue;
-				}
+				mods[index++] = inv.getItem(slot);
 			}
-			
 			if(changed) {
 				if(entityOrWeapon) {
-					
+					int[][] modData = ModUtils.getModsData(mods);
+					FightEntity fe = new FightEntity(Data.getPlayerData(p.getName()),modData[0],modData[1]);
+					List<String> lore = Arrays.asList(getString(fe.getAttributes()));
+					inv.setItem(ModGui.getInfoSlot2(), getSignItem(lore));
 				}else {
-					BasicDamageData bdd = DamageSystem.getBasicDamageData(p, 
-							ModUtils.setWeaponMod(inv.getItem(ModGui.getItemSlot()).clone(), Arrays.asList(mods)));
-					Weapon weapon = bdd.getWeapon();
+					Weapon weapon = DamageSystem.getModWeapon(ModUtils.setWeaponMod(inv.getItem(ModGui.getItemSlot()).clone(), mods));
 					List<String> lore = Arrays.asList(getString(weapon.getAttributes(),weapon.getDamages()));
 					inv.setItem(ModGui.getInfoSlot2(), getSignItem(lore));
 				}
@@ -80,8 +83,10 @@ public class ModTask implements Runnable{
 	}
 	
 	public static void cancel(String playerName) {
-		if(tasks.containsKey(playerName))
+		if(tasks.containsKey(playerName)) {
 			Bukkit.getScheduler().cancelTask(tasks.get(playerName));
+			tasks.remove(playerName);
+		}
 	}
 	
 	public static void start(Player player,boolean entityOrWeapon) {
@@ -104,6 +109,18 @@ public class ModTask implements Runnable{
 		attribute.forEach(new BiConsumer<WeaponAttribute,Double>() {
 			@Override
 			public void accept(WeaponAttribute t, Double u) {
+				sb.append(I18n.tr("weapon-attribute."+t.name())+": "+Util.formatNum(u, 2)+"\n");
+			}
+		});
+		
+		return sb.toString().split("\n");
+	}
+	
+	private String[] getString(HashMap<EntityAttribute, Double> attribute) {
+		StringBuilder sb = new StringBuilder();
+		attribute.forEach(new BiConsumer<EntityAttribute,Double>() {
+			@Override
+			public void accept(EntityAttribute t, Double u) {
 				sb.append(I18n.tr("weapon-attribute."+t.name())+": "+Util.formatNum(u, 2)+"\n");
 			}
 		});

@@ -1,7 +1,5 @@
 package com.github.schooluniform.hamstersystem.util;
 
-import java.util.List;
-
 import org.bukkit.inventory.ItemStack;
 
 import com.github.schooluniform.hamstersystem.data.Data;
@@ -14,41 +12,38 @@ public class ModUtils {
 	/**
 	 * 返回一个mod物品所携带的mod数据
 	 * @param item mod物品
-	 * @return 若不符合mod要求则返回null 反之返回长度为3的数组, ID Level Exp.
+	 * @return 若不符合mod要求则返回{-1,-1,-1,-1} 反之返回长度为3的数组, ID Level Exp Polarity.
 	 */
 	public static int[] getModData(ItemStack item) {
-		if(!DamageSystem.isMod(item))return null;
+		if(!DamageSystem.isMod(item))return new int[] {-1,-1,-1,-1};
 		String hsmlt = Data.NBTTag.getString(item, ModTag.HSMLT.name());
 		int[] modLevel = Data.NBTTag.getIntArray(item, ModTag.HSMLE.name());
-		return new int[] {Data.getMod(hsmlt).getId(),modLevel[0],modLevel[1]};
+		return new int[] {
+				Data.getMod(hsmlt).getId(),
+				modLevel[0],
+				modLevel[1],
+				Data.NBTTag.getInt(item, ModTag.HSMINFO.name())};
 	}
 	
 	/**
 	 * 返回一个mod物品列表中所有数据
 	 * @param mods mod物品列表
-	 * @return 长度为3的二维数组, ID Level Exp.
+	 * @return 长度为4的二维数组, ID Level Exp Polarity.
 	 */
-	public static int[][] getModsData(List<ItemStack> mods) {
-		int[] modsId = new int[mods.size()],
-				modsLevel = new int[mods.size()],
-				modsExp = new int[mods.size()];
+	public static int[][] getModsData(ItemStack[] mods) {
+		int[] modsId = new int[mods.length],
+				modsLevel = new int[mods.length],
+				modsExp = new int[mods.length],
+				modsPolarity = new int[mods.length+1];
 		int index = 0;
 		for(ItemStack mod : mods) {
 			int[] modData = getModData(mod);
 			modsId[index] = modData[0];
 			modsLevel[index] = modData[1];
 			modsExp[index++] = modData[2];
+			modsPolarity[index] = modData[3];
 		}
 		return new int[][] {modsId,modsLevel,modsExp};
-	}
-	
-	/**
-	 * 获取mod物品的极性
-	 * @param mod mod物品
-	 * @return 极性代码
-	 */
-	public static int getModPolarity(ItemStack mod) {
-		return Data.NBTTag.getInt(mod, ModTag.HSMINFO.name());
 	}
 	
 	public static int getWeaponInfoFirst(ItemStack weapon) {
@@ -59,29 +54,13 @@ public class ModUtils {
 	}
 	
 	/**
-	 * 获取mod物品列表的极性
-	 * @param mods mod物品列表
-	 * @return 长度为mod物品列表长度+1的int数组. 第一个为是否双倍(0否1是) 默认为0
-	 */
-	public static int[] getModsPolarity(List<ItemStack> mods,ItemStack weapon) {
-		int[] rarity = new int[mods.size()+1];
-		rarity[0] = getWeaponInfoFirst(weapon);
-		int index = 1;
-		for(ItemStack mod : mods) {
-			rarity[index++] = getModPolarity(mod);
-		}
-		return rarity;
-	}
-	
-	/**
 	 * 设定武器mod信息
 	 * @param item 武器物品
 	 * @param modData getModsData(List<ItemStack> mods)方法返回的mod信息
-	 * @param rarity mod极性类信息
 	 * @return 设定好的武器
 	 */
-	public static ItemStack setWeaponMod(ItemStack item,int[][] modData,int[] rarity) {
-		item = Data.NBTTag.addNBT(item, WeaponTag.HSWInfo.name(), rarity);
+	public static ItemStack setWeaponMod(ItemStack item,int[][] modData) {
+		item = Data.NBTTag.addNBT(item, WeaponTag.HSWInfo.name(), modData[3]);
 		item = Data.NBTTag.addNBT(item, WeaponTag.HSWML.name(), modData[1]);
 		item = Data.NBTTag.addNBT(item, WeaponTag.HSWME.name(), modData[2]);
 		item = Data.NBTTag.addNBT(item, WeaponTag.HSWMOD.name(), modData[0]);
@@ -94,8 +73,10 @@ public class ModUtils {
 	 * @param mods 要设定的mod
 	 * @return 设定好的武器
 	 */
-	public static ItemStack setWeaponMod(ItemStack weapon,List<ItemStack> mods) {
-		return setWeaponMod(weapon, getModsData(mods), getModsPolarity(mods, weapon));
+	public static ItemStack setWeaponMod(ItemStack weapon,ItemStack[] mods) {
+		int[][] modData = getModsData(mods);
+		modData[3][0] = getWeaponInfoFirst(weapon);
+		return setWeaponMod(weapon, modData);
 	}
 	
 	public static Mod getBasicMod(ItemStack item) {
@@ -107,18 +88,9 @@ public class ModUtils {
 	/**
 	 * 获取一个武器所带mod
 	 * @param item 武器物品
-	 * @return 一个长度为3的二维数组,1为modId,2为modLevel,3为modExp,4为极性列表
+	 * @return 一个长度为4的二维数组,1为modId,2为modLevel,3为modExp,4为极性列表
 	 */
 	public static int[][] getWeaponMods(ItemStack item){
-		int[][] a = new int[][] {
-			Data.NBTTag.getIntArray(item, WeaponTag.HSWMOD.name()),
-			Data.NBTTag.getIntArray(item, WeaponTag.HSWML.name()),
-			Data.NBTTag.getIntArray(item, WeaponTag.HSWME.name()),
-			Data.NBTTag.getIntArray(item, WeaponTag.HSWInfo.name())
-		};
-		for(int[] b : a)
-			for(int v:b)
-				System.out.println(v);
 		return new int[][] {
 			Data.NBTTag.getIntArray(item, WeaponTag.HSWMOD.name()),
 			Data.NBTTag.getIntArray(item, WeaponTag.HSWML.name()),

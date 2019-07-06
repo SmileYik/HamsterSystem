@@ -3,8 +3,6 @@ package com.github.schooluniform.hamstersystem.data;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -18,24 +16,22 @@ import org.bukkit.inventory.ItemStack;
 import com.github.schooluniform.hamstersystem.HamsterSystem;
 import com.github.schooluniform.hamstersystem.entity.EntityAttribute;
 import com.github.schooluniform.hamstersystem.entity.FightEntity;
-import com.github.schooluniform.hamstersystem.fightsystem.DamageSystem;
 import com.github.schooluniform.hamstersystem.util.ModUtils;
 import com.github.schooluniform.hamstersystem.util.Util;
 
 public class PlayerData extends FightEntity{
 	
 	//Mod
-	private int[] modId,modLevel,modExp;
-	private List<ItemStack> mods;
+	private int[] modId,modLevel,modExp,modP;
 	
 	
 	public PlayerData(UUID entityUUID, EntityType entityType, double health, double shield, double energy,
-			HashMap<EntityAttribute, Double> attributes, int[] modId,int[] modLevel,int[] modExp, List<ItemStack> mods) {
+			HashMap<EntityAttribute, Double> attributes, int[] modId,int[] modLevel,int[] modExp,int[] modP) {
 		super(entityUUID, entityType, health, shield, energy, attributes);
 		this.modId = modId;
 		this.modLevel = modLevel;
 		this.modExp = modExp;
-		this.mods = mods;
+		this.modP = modP;
 	}
 
 	public FightEntity getFight(){
@@ -49,7 +45,7 @@ public class PlayerData extends FightEntity{
 				p.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue(),
 				100,0,
 				Util.getDefaultEntityAttributes(),
-				new int[10],new int[10],new int[10],new LinkedList<ItemStack>());
+				new int[10],new int[10],new int[10],new int[11]);
 	}
 	
 	public static PlayerData  laod(String playerName){
@@ -67,19 +63,14 @@ public class PlayerData extends FightEntity{
 				attributes.put(attribute, data.getDouble("attributes."+attribute));
 				
 		int[][] modData = Util.modDataToArray(data.getString("mods"));
-		List<ItemStack> mods = new LinkedList<ItemStack>();
-		int index = 0;
-		while(data.contains("mods.items."+index)) {
-			mods.add(data.getItemStack("mods.items."+index++));
-		}
-		
+		modData[3][0] = data.getInt("mod-double");
 		return new PlayerData(
 				UUID.fromString(data.getString("UUID")),
 				EntityType.PLAYER,
 				data.getDouble("health"),
 				data.getDouble("shield"),
 				data.getDouble("energy"),
-				attributes,modData[0],modData[1],modData[2],mods);
+				attributes,modData[0],modData[1],modData[2],modData[3]);
 	}
 	
 	public void save(){
@@ -91,13 +82,8 @@ public class PlayerData extends FightEntity{
 		data.set("energy", getEnergy());
 		for(Map.Entry<EntityAttribute, Double> entry : attributes.entrySet())
 			data.set("attributes."+entry.getKey(), entry.getValue());
-		data.set("mods", Util.modDataToString(modId, modLevel, modExp));
-		
-		int index = 0;
-		for(ItemStack item : mods) {
-			data.set("mods.items."+index++, item);
-		}
-		
+		data.set("mods", Util.modDataToString(modId, modLevel, modExp,modP));
+		data.set("mod-double", modP[0]);
 		try {
 			data.save(file);
 		} catch (IOException e) {
@@ -106,16 +92,27 @@ public class PlayerData extends FightEntity{
 		}
 	}
 	
-	public void setMod(List<ItemStack> mods) {
+	public void setMod(ItemStack mods[]) {
 		int[][] modsData = ModUtils.getModsData(mods);
 		this.modId = modsData[0];
 		this.modLevel = modsData[1];
 		this.modExp = modsData[2];
-		this.mods = mods;
 	}
 
-	public List<ItemStack> getMods() {
-		return mods;
+	public int[] getModId() {
+		return modId;
+	}
+
+	public int[] getModLevel() {
+		return modLevel;
+	}
+
+	public int[] getModExp() {
+		return modExp;
+	}
+
+	public int[] getModP() {
+		return modP;
 	}
 	
 	

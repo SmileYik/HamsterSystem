@@ -16,9 +16,9 @@ public class CorrosiveEffect {
 	 * 腐蚀效果: 减少护甲
 	 * @param entity 战斗单位
 	 */
-	public static void corrosive(FightEntity entity){
+	public static void corrosive(FightEntity entity,double extraArmor){
 		entity.setDamageSign(DamageType.Corrosive, true);
-		double armor = entity.getAttribute(EntityAttribute.Armor)*(1-effect/100D);
+		double armor = entity.getAttribute(EntityAttribute.Armor)*(1-effect/extraArmor/100D);
 		entity.setAttribute(EntityAttribute.Armor, armor<=1?1:armor);
 	}
 }

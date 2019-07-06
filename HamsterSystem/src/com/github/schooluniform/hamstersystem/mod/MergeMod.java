@@ -36,7 +36,7 @@ public class MergeMod {
 		
 		for(int i = 0 ; i<size ;i++){
 			int modId = modsId[i];
-			if(modId<0 || !Data.contansMod(modId))continue;
+			if(modId<0 || !Data.contansMod(modId)) continue;
 			Mod mod = new Mod(Data.getMod(modId));
 			mod.up(modsLevel[i]);
 			

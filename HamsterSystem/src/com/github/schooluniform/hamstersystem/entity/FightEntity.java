@@ -185,6 +185,10 @@ public class FightEntity{
 		}
 	}
 	
+	public HashMap<EntityAttribute, Double> getAttributes() {
+		return attributes;
+	}
+
 	public String getUpdateSign() {
 		//"||||||||||||||||||||"
 		//蓝->红->黑

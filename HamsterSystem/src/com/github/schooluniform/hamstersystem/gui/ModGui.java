@@ -1,7 +1,6 @@
 package com.github.schooluniform.hamstersystem.gui;
 
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
@@ -15,7 +14,6 @@ import com.github.schooluniform.hamstersystem.data.Data;
 import com.github.schooluniform.hamstersystem.data.PlayerData;
 import com.github.schooluniform.hamstersystem.event.inventorytask.ModTask;
 import com.github.schooluniform.hamstersystem.fightsystem.DamageSystem;
-import com.github.schooluniform.hamstersystem.mod.Mod;
 import com.github.schooluniform.hamstersystem.util.ModUtils;
 
 public class ModGui {
@@ -52,24 +50,23 @@ public class ModGui {
 			int index = 0;
 			for(int slot : modSlots) {
 				if(index<modsData[0].length) {
-					Mod mod = Data.getMod(modsData[0][index]);
-					inv.setItem(slot, mod.getItem(modsData[1][index], modsData[2][index], modsData[3][index+1]));
+					if(modsData[0][index]<0) {
+						inv.setItem(slot, null);
+					}else {
+						inv.setItem(slot, Data.getMod(modsData[0][index]).getItem(modsData[1][index], modsData[2][index], modsData[3][index+1]));
+					}
 					index++;
 				}else {
 					break;
 				}
 			}			
 		}
-		//Player
-		/*
-		 * PlayerData pd = Data.getPlayerData(p.getName()); int index = 0; for(ItemStack
-		 * item : pd.getMods()) { inv.setItem(modSlots.get(index++), item); }
-		 */
 		p.openInventory(inv);
 		ModTask.start(p, false);
 	}
 	
 	public static void openGUIEntity(Player p) {
+		PlayerData pd = Data.getPlayerData(p.getName());
 		
 	}
 
