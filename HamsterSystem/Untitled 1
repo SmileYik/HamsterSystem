@@ -10,9 +10,9 @@ actionbar.fight.quit-fight = 离开战斗状态!
 actionbar.fight.enter-heal = 进入治疗状态!
 actionbar.fight.quit-heal = 离开治疗状态!
 
-actionbar.fight.melee.power-enegry = 充能完毕! | 伤害倍率: {0}
-actionbar.fight.melee.no-enegry = 能量不足以支撑充能攻击.
-actionbar.fight.melee.cancel-power-enegry =取消充能.
+actionbar.fight.melee.power-energy = 充能完毕! | 伤害倍率: {0}
+actionbar.fight.melee.no-energy = 能量不足以支撑充能攻击.
+actionbar.fight.melee.cancel-power-energy =取消充能.
 
 actionbar.fight.shoot.reloading = 正在重装弹药, 无法射击!
 actionbar.fight.shoot.reload = 重装弹药 | 需用时: {0}s
@@ -50,6 +50,7 @@ actionbar.fight.effect.radiation = 辐射你, {0}!
 actionbar.fight.effect.slash = 切割你, {0}!
 actionbar.fight.effect.toxin = 中毒吧, {0}!
 actionbar.fight.effect.viral = 去见医生吧, {0}!
+actionbar.fight.pickup-energy-item = 增加 {0} 能量
 
 mod.rarity.1 = 常见
 mod.rarity.2 = 罕见
@@ -93,6 +94,48 @@ weapon-attribute.Recoil = 后坐力
 weapon-attribute.Reload_Speed = 换弹时长
 weapon-attribute.Charging_Efficiency = 充能效率
 weapon-attribute.Charging_Damage = 充能倍率
+
+
+party.create-party.succeed = 创建队伍成功
+party.create-party.had-party = 你已经有个队伍了
+party.quit-party = 退出了{0}的队伍
+party.quit-party.self-1 = 退出了自己的队伍
+party.quit-party.self-2 = 退出了自己的队伍, 并把队长移交给了{0}
+party.quit-party.none-party = 你并没有加入一个队伍!
+
+command.only-player = 只有玩家才能使用这个命令
+command.nothing-in-your-hand = 你手上什么东西都么有
+command.weapon-is-not-find = 武器 {0} 不存在
+command.mod-is-not-find = Mod {0} 不存在
+
+command.des.1.oemg = 打开实体Mod界面
+command.des.1.owmg = 打开武器Mod界面
+command.des.2.admin-help = 查看管理员指令
+command.des.2.setWeapon = 设定手上的物品为武器
+command.des.2.setMod = 设定手上的物品为Mod
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

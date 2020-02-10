@@ -11,10 +11,14 @@ public enum EntityAttribute {
 	Armor(Calculation.Multiplication),
 	/**能量*/
 	Energy(Calculation.Multiplication),
+	/**能量效率*/
+	EnergyEfficiency(Calculation.Multiplication),
 	/**生命*/
 	Health(Calculation.Multiplication),
 	/**生命恢复速率*/
 	HealthRefresh(Calculation.Multiplication),
+	/**持续时间*/
+	Duration(Calculation.Multiplication),
 	/**Level*/
 	Level(Calculation.Addition),
 	/**打击护甲, 遭受打击伤害时获得护甲加成*/

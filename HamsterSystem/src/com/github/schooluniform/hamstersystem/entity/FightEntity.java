@@ -9,12 +9,16 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.boss.BarColor;
+import org.bukkit.boss.BarStyle;
+import org.bukkit.boss.BossBar;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
+import com.github.schooluniform.hamstersystem.I18n;
 import com.github.schooluniform.hamstersystem.data.Data;
 import com.github.schooluniform.hamstersystem.fightsystem.base.DamageType;
 import com.github.schooluniform.hamstersystem.mod.MergeMod;
@@ -30,6 +34,7 @@ public class FightEntity{
 	private double energy;
 	private List<DamageType> damageSigns = new LinkedList<>();
 	protected HashMap<EntityAttribute, Double> attributes;
+	private BossBar healthBar,energyBar;
 	
 	//Clone
 	public FightEntity(FightEntity entity){
@@ -192,20 +197,40 @@ public class FightEntity{
 	public String getUpdateSign() {
 		//"||||||||||||||||||||"
 		//蓝->红->黑
-		
-		{
-			String sign = "||||||||||||||||||||";
+		try {
+			String sign = "||||||||||||||||||||||||||||||||||||||||";
 			LivingEntity entity = getEntity();
+			if(entity == null) {
+				return "null";
+			}
 			String name = entity.getCustomName();
 			if(name == null) {
 				name = entity.getName();
 			}
+			if(entity instanceof Player) {
+				if(healthBar == null) {
+					healthBar = Bukkit.createBossBar("", BarColor.BLUE, BarStyle.SEGMENTED_20);
+					healthBar.addPlayer((Player) entity);
+				}
+				if(energyBar == null) {
+					energyBar = Bukkit.createBossBar("", BarColor.BLUE, BarStyle.SEGMENTED_20);
+					energyBar.addPlayer((Player) entity);
+				}
+			}
 			if(shield > 0) {
 				int index = (int)(shield/(attributes.get(EntityAttribute.Shield)/sign.length()));
 				if(index < sign.length()) {
-					sign = "§b"+sign.substring(0, index)+"§c"+sign.substring(index);					
+					sign = "§b"+sign.substring(0, index)+"§c"+sign.substring(index);			
 				}else {
 					sign = "§b"+sign;					
+				}
+				if(healthBar != null) {
+					healthBar.setColor(BarColor.BLUE);
+					double value= shield/(attributes.get(EntityAttribute.Shield));
+					if(value>1) {
+						value = 1;
+					}
+					healthBar.setProgress(value);
 				}
 			}else {
 				int index = (int)(entity.getHealth()/(entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue()/sign.length()));
@@ -213,6 +238,14 @@ public class FightEntity{
 					sign = "§c"+sign.substring(0, index)+"§8"+sign.substring(index);					
 				}else {
 					sign = "§c"+sign;					
+				}
+				if(healthBar != null) {
+					healthBar.setColor(BarColor.RED);
+					double value= entity.getHealth()/entity.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
+					if(value>1) {
+						value = 1;
+					}
+					healthBar.setProgress(value);
 				}
 			}
 			
@@ -227,7 +260,35 @@ public class FightEntity{
 				}
 				sign+="§c)";
 			}
+			if(healthBar != null) {
+				healthBar.setTitle(name+": "+sign);
+			}
+			if(energyBar != null) {
+				energyBar.setTitle(I18n.tr("1",energy));
+				double energy = getAttribute(EntityAttribute.Energy);
+				double value= this.energy/energy==0?1:energy;
+				if(value>1) {
+					value = 1;
+				}else if(value<0) {
+					value = 0;
+				}
+				energyBar.setProgress(value);
+			}
 			return name+": "+sign;
+		}catch (Exception e) {
+			e.printStackTrace();
+			return "null";
+		}
+	}
+	
+	public void resetBar() {
+		if(healthBar != null) {
+			healthBar.removeAll();
+			healthBar = null;			
+		}
+		if(energyBar != null) {
+			energyBar.removeAll();
+			energyBar = null;
 		}
 	}
 }

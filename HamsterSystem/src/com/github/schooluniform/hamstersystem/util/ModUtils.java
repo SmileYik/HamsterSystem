@@ -43,7 +43,7 @@ public class ModUtils {
 			modsExp[index++] = modData[2];
 			modsPolarity[index] = modData[3];
 		}
-		return new int[][] {modsId,modsLevel,modsExp};
+		return new int[][] {modsId,modsLevel,modsExp,modsPolarity};
 	}
 	
 	public static int getWeaponInfoFirst(ItemStack weapon) {

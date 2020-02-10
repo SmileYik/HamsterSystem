@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
 import com.github.schooluniform.hamstersystem.I18n;
-import com.github.schooluniform.hamstersystem.entity.Mob;
+import com.github.schooluniform.hamstersystem.entity.mob.Mob;
 import com.github.schooluniform.hamstersystem.fightsystem.effect.BlastEffect;
 import com.github.schooluniform.hamstersystem.fightsystem.effect.ColdEffect;
 import com.github.schooluniform.hamstersystem.fightsystem.effect.CorrosiveEffect;
@@ -29,9 +29,12 @@ import com.github.schooluniform.hamstersystem.nms.nbt.NBTItem;
 import com.github.schooluniform.hamstersystem.nms.nbt.NBT_V1_12;
 import com.github.schooluniform.hamstersystem.weapon.Weapon;
 
+import io.lumine.xikage.mythicmobs.api.bukkit.BukkitAPIHelper;
+
 public class Data {
 	public static NBTItem NBTTag;
 	public static Actionbar actionbar;
+	//public static BukkitAPIHelper mm;
 	
 	private static String modGuiTitle;
 	
@@ -201,6 +204,10 @@ public class Data {
 	
 	public static Mod getMod(String name){
 		return mods.get(modsByName.get(name));
+	}
+	
+	public static Mob getMob(String mobName){
+		return mobs.get(mobName);
 	}
 	
 	public static boolean contansMod(String name){

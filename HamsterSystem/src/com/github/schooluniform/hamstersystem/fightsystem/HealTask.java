@@ -15,6 +15,7 @@ import com.github.schooluniform.hamstersystem.I18n;
 import com.github.schooluniform.hamstersystem.data.Data;
 import com.github.schooluniform.hamstersystem.entity.EntityAttribute;
 import com.github.schooluniform.hamstersystem.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.particle.ParticleFight;
 
 public class HealTask implements Runnable{
 	private static int leaveHealTime = 5;
@@ -35,7 +36,13 @@ public class HealTask implements Runnable{
 		
 		while(iterator.hasNext()){
 			Map.Entry<Integer,Map.Entry<FightEntity,Integer>> entry = iterator.next();
-			if(leaveEntity.contains(entry.getKey())){
+			if(entry.getValue().getKey().getEntity() == null) {
+				iterator.remove();
+				leaveEntity.remove(entry.getKey());
+				fightData.remove(entry.getKey());
+				fixPlayerData(entry.getValue().getKey());
+				continue;
+			}else if(leaveEntity.contains(entry.getKey())){
 				iterator.remove();
 				leaveEntity.remove(entry.getKey());
 				fightData.remove(entry.getKey());
@@ -44,13 +51,15 @@ public class HealTask implements Runnable{
 			}else if(entry.getValue().getKey().getShield()<entry.getValue().getKey().getAttribute(EntityAttribute.Shield)){
 				entry.getValue().getKey().modifyShield(entry.getValue().getKey().getAttribute(EntityAttribute.Shield) *
 						entry.getValue().getKey().getAttribute(EntityAttribute.ShieldRefresh)/100D);
+				entry.getValue().getKey().getUpdateSign();
+				ParticleFight.playHealShield(entry.getValue().getKey().getEntity());
 			}else if(entry.getValue().getValue()>0){
 				entry.getValue().setValue(entry.getValue().getValue()-1);
 			}else{
-				//TODO
 				I18n.senda(entry.getValue().getKey().getEntity(), "actionbar.fight.quit-heal");
 				iterator.remove();
 				fightData.remove(entry.getKey());
+				fixPlayerData(entry.getValue().getKey());
 				continue;
 			}
 		}
@@ -81,7 +90,7 @@ public class HealTask implements Runnable{
 		return data;
 	}
 	
-	private static void fixPlayerData(FightEntity entity){
+	public static void fixPlayerData(FightEntity entity){
 		if(entity.getEntityType() == EntityType.PLAYER){
 			//Fix Player's Health
 			if(entity.getEntity().getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue() != 
@@ -92,90 +101,9 @@ public class HealTask implements Runnable{
 			}
 			//update player's energy
 			Data.getPlayerData(entity.getEntity().getName()).setEnergy(entity.getEnergy());
+			
+			entity.resetBar();
 		}
 
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-/*	
-	//after fighted, entity who be hurt will in this HashMap until it be heal.
-	private static HashMap<Integer,FightEntity> fightedEntity = new HashMap<>();
-	private static HashMap<Integer,Integer> healingEntityLeave = new HashMap<>();
-	
-	private static ArrayList<Integer> stopHealList = new ArrayList<>();
-	private static HashMap<Integer,FightEntity> enterHealList = new HashMap<>();
-	
-	@Override
-	public void run() {
-		for(Map.Entry<Integer,Integer> entry : healingEntityLeave.entrySet()){
-			FightEntity entity = fightedEntity.get(entry.getKey());
-			if(entity == null){
-				
-				continue;
-			}
-			if(entity.getShield()>=entity.getAttribute(EntityAttribute.Shield)){
-				entry.setValue(entry.getValue()-1);
-				if(entry.getValue()<=0){
-					stopHeal(entity.getEntity().getEntityId());
-				}
-			}else{
-				entity.modifyShield(entity.getAttribute(EntityAttribute.Shield)*(entity.getAttribute(EntityAttribute.ShieldRefresh)/100D));
-				if(entity.getShield()>=entity.getAttribute(EntityAttribute.Shield)){
-					entity.setShield(entity.getAttribute(EntityAttribute.Shield));
-				}
-			}
-		}
-
-		//out
-		for(int i : stopHealList){
-			fightedEntity.remove(i);
-			healingEntityLeave.remove(i);
-		}
-		//in
-		for(Map.Entry<Integer,FightEntity> entry : enterHealList.entrySet()){
-			fightedEntity.put(entry.getKey(),entry.getValue());
-			healingEntityLeave.put(entry.getKey(), leaveHealTime);
-		}
-	}
-	
-	public static void enter(int entityID,FightEntity entity){
-		if(fightedEntity.containsKey(entityID))return;
-		if(entity.getShield() == entity.getAttribute(EntityAttribute.Shield) &&
-				entity.getEntity().getHealth() == entity.getAttribute(EntityAttribute.Health))return;
-		if(stopHealList.contains(entityID))stopHealList.remove(entityID);
-		enterHealList.put(entityID, entity);
-		healingEntityLeave.put(entityID, leaveHealTime);
-	}
-	
-	public static boolean containsKey(int entityID){
-		return fightedEntity.containsKey(entityID);
-	}
-	
-	public static FightEntity getFightEntityData(int entityID){
-		return fightedEntity.get(entityID);
-	}
-	
-	public static void stopHeal(int entityID){
-		if(enterHealList.containsKey(entityID))enterHealList.remove(entityID);
-		stopHealList.add(entityID);
-	}*/
 }

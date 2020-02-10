@@ -18,4 +18,5 @@ public class BasicEvent implements Listener{
 	public void onPlayerLeave(PlayerQuitEvent e){
 		Data.removePlayer(e.getPlayer().getName());
 	}
+
 }

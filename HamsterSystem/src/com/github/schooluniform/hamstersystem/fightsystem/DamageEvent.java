@@ -11,17 +11,21 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 
 import com.github.schooluniform.hamstersystem.I18n;
+import com.github.schooluniform.hamstersystem.data.Data;
 import com.github.schooluniform.hamstersystem.entity.EntityAttribute;
 import com.github.schooluniform.hamstersystem.entity.FightEntity;
+import com.github.schooluniform.hamstersystem.entity.mob.Mob;
 import com.github.schooluniform.hamstersystem.fightsystem.base.BasicDamageData;
 import com.github.schooluniform.hamstersystem.fightsystem.effect.ImpactEffect;
 import com.github.schooluniform.hamstersystem.fightsystem.effect.PunctureEffect;
+import com.github.schooluniform.hamstersystem.particle.ParticleFight;
 import com.github.schooluniform.hamstersystem.util.Util;
 import com.github.schooluniform.hamstersystem.weapon.Weapon;
 import com.github.schooluniform.hamstersystem.weapon.WeaponAttribute;
@@ -31,7 +35,6 @@ import com.github.schooluniform.hamstersystem.weapon.WeaponMelee;
 public class DamageEvent implements Listener{
 	//ID Damage Enegry
 	private static HashMap<Integer,Map.Entry<Double, Double>> powerEnergy = new HashMap<>();
-	
 	
 	@EventHandler
 	public void onEntityFight(EntityDamageByEntityEvent e){
@@ -47,17 +50,19 @@ public class DamageEvent implements Listener{
 			ItemStack weapon = damager.getEquipment().getItemInMainHand();
 			if(ImpactEffect.getImpactEntity().containsKey(damager.getEntityId())){
 				e.setCancelled(true);
+				DamageSystem.sendHealth(damager, defander);
 				return;
 			}
 			
 			if(!DamageSystem.isWeapon(weapon)){
-				System.out.println("a");
 				e.setDamage(getFinalDamage(e.getDamage(), defander));
+				DamageSystem.sendHealth(damager, defander);
 				return;
 			}
 			BasicDamageData bdd = DamageSystem.getBasicDamageData(damager, weapon);
 			if(bdd.getWeapon() instanceof WeaponLauncher) {
 				e.setDamage(getFinalDamage(e.getDamage(), defander));
+				DamageSystem.sendHealth(damager, defander);
 				return;
 			}
 			
@@ -66,7 +71,7 @@ public class DamageEvent implements Listener{
 				Map.Entry<Double, Double> entry = powerEnergy.get(damager.getEntityId());
 				FightEntity damagerData = FightSystem.fight(damager);
 				if(damagerData.getEnergy()<entry.getValue()){
-					I18n.senda(damager, "actionbar.fight.melee.no-enegry");
+					I18n.senda(damager, "actionbar.fight.melee.no-energy");
 					powerEnergy.remove(damager.getEntityId());
 				}else{
 					bdd.setDamage(bdd.getDamage()*entry.getKey().doubleValue());
@@ -78,6 +83,9 @@ public class DamageEvent implements Listener{
 			
 			DamageSystem.triggerDamage(bdd,defander);
 			double finalDamage = getFinalDamage(bdd.getDamageWithCirt(), defander);
+			if(finalDamage > 0) {
+				ParticleFight.playDamageHealth(defander.getEntity());
+			}
 			e.setDamage(finalDamage);
 		}else{
 			if(ShootSystem.getLaunchedProjectile().containsKey(e.getDamager().getEntityId())){
@@ -86,6 +94,7 @@ public class DamageEvent implements Listener{
 				
 				if(ImpactEffect.getImpactEntity().containsKey(bdd.getAttacker().getEntityId())){
 					e.setCancelled(true);
+					DamageSystem.sendHealth(damager, defander);
 					return;
 				}
 				//Puncture
@@ -93,6 +102,9 @@ public class DamageEvent implements Listener{
 				
 				double finalDamage = getFinalDamage(bdd.getDamageWithCirt(), defander);
 				DamageSystem.triggerDamage(bdd,defander);
+				if(finalDamage > 0) {
+					ParticleFight.playDamageHealth(defander.getEntity());
+				}
 				e.setDamage(finalDamage);
 				ShootSystem.getLaunchedProjectile().remove(e.getDamager().getEntityId());
 			}
@@ -106,6 +118,44 @@ public class DamageEvent implements Listener{
 		FightSystem.leaveFight(e.getEntity().getEntityId());
 		HealTask.stopHeal(e.getEntity().getEntityId());
 		powerEnergy.remove(e.getEntity().getEntityId());
+		
+		if(e.getEntity().hasMetadata("HamsterSystemMob")) {
+			String mobName = e.getEntity().getMetadata("HamsterSystemMob").get(0).asString();
+			Mob mob = Data.getMob(mobName);
+			if(mob!=null) {
+				e.getDrops().addAll(mob.getDrops());
+			}
+		}
+	}
+	
+	@EventHandler
+	public void onPickupItem(EntityPickupItemEvent e){
+		int itemEnergy = 25;
+		ItemStack item = e.getItem().getItemStack();
+		if(Data.NBTTag.contantsNBT(item, "HS-ENERGY")) {
+			e.setCancelled(true);
+			FightEntity entity = FightSystem.fight(e.getEntity());
+			double needEnergy = entity.getAttribute(EntityAttribute.Energy)-entity.getEnergy();
+			if(needEnergy<=0) {
+				return;
+			}else{
+				int needItem = (int) (needEnergy/itemEnergy);
+				int amount;
+				if(needEnergy % itemEnergy != 0) {
+					needItem++;
+				}
+				if(item.getAmount()<=needItem) {
+					amount = item.getAmount();
+					entity.modifyEnergy(itemEnergy*amount);
+					e.getItem().remove();
+				}else {
+					amount = item.getAmount()-needItem;
+					item.setAmount(amount);
+					e.getItem().setItemStack(item);
+				}
+				I18n.senda(e.getEntity(), "actionbar.fight.pickup-energy-item",itemEnergy*amount);
+			}
+		}
 	}
 	
 	@EventHandler
@@ -180,6 +230,7 @@ public class DamageEvent implements Listener{
 		default:
 			break;
 		}
+		defander.getUpdateSign();
 	}
 
 	@EventHandler
@@ -190,7 +241,7 @@ public class DamageEvent implements Listener{
 	}
 	
 	@EventHandler
-	public void onPlayerRightClickWeapon(PlayerInteractEvent e){
+	public void onPlayerRightClickMelee(PlayerInteractEvent e){
 		if((e.getAction() == Action.RIGHT_CLICK_AIR || 
 				e.getAction() == Action.RIGHT_CLICK_BLOCK) &&
 				e.hasItem() && DamageSystem.isWeapon(e.getItem())){
@@ -200,11 +251,11 @@ public class DamageEvent implements Listener{
 			WeaponMelee melee= (WeaponMelee ) weapon;
 			if(powerEnergy.containsKey(e.getPlayer().getEntityId())){
 				powerEnergy.remove(e.getPlayer().getEntityId());
-				I18n.senda(e.getPlayer(),"actionbar.fight.melee.cancel-power-enegry");
+				I18n.senda(e.getPlayer(),"actionbar.fight.melee.cancel-power-energy");
 			}else{
 				powerEnergy.put(e.getPlayer().getEntityId(), 
 						new AbstractMap.SimpleEntry<Double,Double>(melee.getAttribute(WeaponAttribute.Charging_Damage),melee.getAttribute(WeaponAttribute.Charging_Efficiency)));
-				I18n.senda(e.getPlayer(), "actionbar.fight.melee.power-enegry", Util.formatNum(melee.getAttribute(WeaponAttribute.Charging_Damage), 2));
+				I18n.senda(e.getPlayer(), "actionbar.fight.melee.power-energy", Util.formatNum(melee.getAttribute(WeaponAttribute.Charging_Damage), 2));
 			}
 		}
 	}
@@ -213,7 +264,7 @@ public class DamageEvent implements Listener{
 	public void onPlayerSwapItem(PlayerItemHeldEvent e){
 		if(powerEnergy.containsKey(e.getPlayer().getEntityId())){
 			powerEnergy.remove(e.getPlayer().getEntityId());
-			I18n.senda(e.getPlayer(), "actionbar.fight.melee.cancel-power-enegry");
+			I18n.senda(e.getPlayer(), "actionbar.fight.melee.cancel-power-energy");
 		}
 	}
 	

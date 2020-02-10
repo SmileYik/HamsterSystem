@@ -15,7 +15,6 @@ import com.github.schooluniform.hamstersystem.weapon.WeaponAttribute;
 
 public class Test1 {
 	
-	
 	@Test
 	public void test(){
 		/*
@@ -35,5 +34,15 @@ public class Test1 {
 		for(Object obj : h.keySet().toArray())
 			System.out.println(obj+": "+h.get(obj));
 		System.out.println(MessageFormat.format("a: {0}\nb: {1}\nc: {2}", h.values().toArray()));
+	}
+	
+	long[] groups;
+	public boolean isGroup(long group) {
+		for(long temp : groups) {
+			if(temp == group) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

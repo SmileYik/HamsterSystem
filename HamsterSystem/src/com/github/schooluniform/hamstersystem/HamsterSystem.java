@@ -8,14 +8,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.github.schooluniform.hamstersystem.data.Data;
-import com.github.schooluniform.hamstersystem.data.PlayerData;
 import com.github.schooluniform.hamstersystem.event.BasicEvent;
 import com.github.schooluniform.hamstersystem.event.InventoryEvent;
 import com.github.schooluniform.hamstersystem.fightsystem.DamageEvent;
 import com.github.schooluniform.hamstersystem.fightsystem.ShootSystem;
 import com.github.schooluniform.hamstersystem.gui.ModGui;
 import com.github.schooluniform.hamstersystem.mod.Mod;
-import com.github.schooluniform.hamstersystem.mod.ModTag;
 import com.github.schooluniform.hamstersystem.weapon.Weapon;
 import com.github.schooluniform.hamstersystem.weapon.WeaponAttribute;
 import com.github.schooluniform.hamstersystem.weapon.WeaponLauncher;
@@ -25,14 +23,14 @@ import java.io.File;
 
 public class HamsterSystem extends JavaPlugin{
 	public static HamsterSystem plugin;
+	Object obj[] = new Object[10];
 	//La vie est drole
 	
 	@Override
 	public void onEnable() {
 		plugin = this;
 		firstLoad();
-		if(!Data.init(getConfig()))
-			return;
+		if(!Data.init(getConfig()))return;
 
 		addOnlinePlayer();
 		
@@ -40,6 +38,8 @@ public class HamsterSystem extends JavaPlugin{
 		this.getServer().getPluginManager().registerEvents(new DamageEvent(), this);
 		this.getServer().getPluginManager().registerEvents(new BasicEvent(), this);
 		this.getServer().getPluginManager().registerEvents(new InventoryEvent(), this);
+		//this.getServer().getPluginManager().registerEvents(new SkillProjectileManager(), this);
+		//this.getServer().getPluginManager().registerEvents(new SkillManager(), this);
 		//this.getServer().getScheduler().runTaskTimerAsynchronously(this, new FightSystem(),0,20);
 		//this.getServer().getScheduler().runTaskTimerAsynchronously(this, new HealTask(),0,20);
 		
@@ -57,6 +57,8 @@ public class HamsterSystem extends JavaPlugin{
 			new File(getDataFolder()+File.separator+"mod").mkdir();
 		if(!new File(getDataFolder()+File.separator+"mob").exists())
 			new File(getDataFolder()+File.separator+"mob").mkdir();
+		if(!new File(getDataFolder()+File.separator+"spawner").exists())
+			new File(getDataFolder()+File.separator+"spawner").mkdir();
 		if(!new File(getDataFolder()+File.separator+"config.yml").exists())
 			saveDefaultConfig();
 		try{reloadConfig();}catch (Exception e){}
@@ -72,113 +74,145 @@ public class HamsterSystem extends JavaPlugin{
 		return HamsterSystem.getPlayer(playerName);
 	}
 	
+	@Override
+	public void onDisable() {
+		for(Player p : getServer().getOnlinePlayers())
+			Data.removePlayer(p.getName());
+	}
 	
+	private String[] getHelpCommand(String command,boolean admin) {
+		if(admin) {
+			return new String[] {
+					"=========Hamster System=========",
+					"/"+command+" admin help - "+I18n.tr("command.des.2.admin-help"),
+					"/"+command+" setWeapon <WeaponName> - "+I18n.tr("command.des.2.setWeapon"),
+					"/"+command+" setMod <ModName> - "+I18n.tr("command.des.2.setMod"),
+					"/"+command+" setAmmo <WeaponName> <Size> <true|false>- "+I18n.tr("command.des.2.setMod"),
+					"=========Hamster System=========",
+			};
+		}else {
+			return new String[] {
+					"=========Hamster System=========",
+					"/"+command+" oemg - "+I18n.tr("command.des.1.oemg"),
+					"/"+command+" owmg - "+I18n.tr("command.des.1.owmg"),
+					"/"+command+" admin help - "+I18n.tr("command.des.2.admin-help"),
+					"=========Hamster System========="
+			};
+		}
+	}
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	//Test
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
 		if(!(label.equalsIgnoreCase("HamsterSystem")||label.equalsIgnoreCase("HS")))return true;
-		switch(args.length){
-			case 0:
-			
-				break;
-			case 1:
-				if(args[0].equalsIgnoreCase("demo")){
-					PlayerData pd = Data.getPlayerData(sender.getName());
-					pd.setEnergy(100);
-					
-				}else if(args[0].equalsIgnoreCase("demo2")) {
-					ModGui.openGuiWeapon((Player) sender);
+		
+		switch (args.length) {
+			case 1:{
+				if(!(sender instanceof Player)) {
+					sender.sendMessage(I18n.tr("command.only-player"));
+					return true;
+				}
+				Player p = (Player) sender;
+				if(args[0].equalsIgnoreCase("oemg") 
+							&& (p.hasPermission("HamsterSystem.Command.oemg")
+							|| p.hasPermission("HamsterSystem.Command.*")
+							|| p.isOp())) {
+					//Open Entity Mod Gui
+					ModGui.openGUIEntity(p);
+					return true;
+				}else if(args[0].equalsIgnoreCase("owmg")
+							&& (p.hasPermission("HamsterSystem.Command.owmg")
+							|| p.hasPermission("HamsterSystem.Command.*")
+							|| p.isOp())) {
+					//Open Weapon Mod Gui
+					ModGui.openGuiWeapon(p);
+					return true;
 				}
 				break;
-			case 2:
-				if(args[0].equalsIgnoreCase("setWeapon") && (sender instanceof Player) &&
-						(sender.isOp() || sender.hasPermission("HamsterSystem.Commands"))){
-					Player p = (Player)sender;
+			}case 2:{
+				if(!(sender instanceof Player)) {
+					sender.sendMessage(I18n.tr("command.only-player"));
+					return true;
+				}
+				Player p = (Player) sender;
+				if(args[0].equalsIgnoreCase("admin")
+					&& args[1].equalsIgnoreCase("help")
+							&& (p.hasPermission("HamsterSystem.Command.Admin.*")
+							|| p.hasPermission("HamsterSystem.Command.Admin.Help")
+							|| p.isOp())) {
+					p.sendMessage(getHelpCommand(label, true));
+					return true;
+				}else if(args[0].equalsIgnoreCase("setMod")
+							&& (p.hasPermission("HamsterSystem.Command.Admin.*")
+							|| p.hasPermission("HamsterSystem.Command.Admin.setmod")
+							|| p.isOp())) {
+					if(!Data.contansMod(args[1])){
+						sender.sendMessage(I18n.tr("command.mod-is-not-find", args[1]));
+						return true;
+					}else if(p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() == Material.AIR){
+						sender.sendMessage(I18n.tr("command.nothing-in-your-hand"));
+						return true;
+					}else {
+						Mod modData = Data.getMod(args[1]);
+						ItemStack mod = modData.getItem(0, 0, modData.getPolarity().getType());
+						p.getInventory().setItemInMainHand(mod);
+						return true;
+					}
+					
+				}else if(args[0].equalsIgnoreCase("setWeapon")
+						&& (p.hasPermission("HamsterSystem.Command.Admin.*")
+						|| p.hasPermission("HamsterSystem.Command.Admin.setweapon")
+						|| p.isOp())) {
 					if(!Data.contansWeapon(args[1])){
-						sender.sendMessage("Weapon "+args[1]+" is Not Find");
+						sender.sendMessage(I18n.tr("command.weapon-is-not-find", args[1]));
 						return true;
-					}
-					if(p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() == Material.AIR){
-						sender.sendMessage("You have nothing in your hand");
+					}else if(p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() == Material.AIR){
+						sender.sendMessage(I18n.tr("command.nothing-in-your-hand"));
 						return true;
-					}
-					//Set Weapon
-					{
+					}else {
 						Weapon w = Data.getWeapon(args[1]);
 						ItemStack weapon = p.getInventory().getItemInMainHand();
 						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWLT.name(), args[1]);
-//						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWInfo.name(), new int[10]);
 						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWEL.name(), new int[]{0,0});
-//						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWMOD.name(), new int[9] );
-//						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWME.name(), new int[9] );
-//						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWML.name(), new int[9] );
 						if(w instanceof WeaponLauncher){
 							weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWClip.name(), w.getAttribute(WeaponAttribute.Clip).intValue());
 							weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSCSize.name(), 0);							
 						}
-						p.getInventory().setItemInMainHand(weapon);
-					}
-				}else if(args[0].equalsIgnoreCase("setMod") && (sender instanceof Player) &&
-						(sender.isOp() || sender.hasPermission("HamsterSystem.Commands"))){
-					Player p = (Player)sender;
-					if(!Data.contansMod(args[1])){
-						sender.sendMessage("Mod "+args[1]+" is Not Find");
+						p.getInventory().setItemInMainHand(w.getLore(weapon));
 						return true;
-					}
-					if(p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() == Material.AIR){
-						sender.sendMessage("You have nothing in your hand");
-						return true;
-					}
-					//Set Weapon
-					{
-//						ItemStack mod = p.getInventory().getItemInMainHand().clone();
-						Mod modData = Data.getMod(args[1]);
-//						mod = Data.NBTTag.addNBT(mod, ModTag.HSMINFO.name(), modData.getPolarity().getType());
-//						mod = Data.NBTTag.addNBT(mod, ModTag.HSMLE.name(),new int[] {0,0});
-//						mod = Data.NBTTag.addNBT(mod, ModTag.HSMLT.name(), args[1]);
-						ItemStack mod = modData.getItem(0, 0, modData.getPolarity().getType());
-						p.getInventory().setItemInMainHand(mod);
 					}
 				}
-				break;
-			case 4:
-			   if(args[0].equalsIgnoreCase("setammo") && (sender instanceof Player) &&
-						(sender.isOp() || sender.hasPermission("HamsterSystem.Commands"))){
-					Player p = (Player)sender;
+			}case 4:{
+				if(!(sender instanceof Player)) {
+					sender.sendMessage(I18n.tr("command.only-player"));
+					return true;
+				}
+				Player p = (Player) sender;
+				if(args[0].equalsIgnoreCase("setammo") 
+							&& (p.hasPermission("HamsterSystem.Command.Admin.*")
+							|| p.hasPermission("HamsterSystem.Command.Admin.setammo")
+							|| p.isOp())) {
 					if(p.getInventory().getItemInMainHand() == null || p.getInventory().getItemInMainHand().getType() == Material.AIR){
-						sender.sendMessage("You have nothing in your hand");
+						sender.sendMessage(I18n.tr("command.nothing-in-your-hand"));
 						return true;
 					}
-					//Set Weapon
-					{
-						ItemStack weapon = p.getInventory().getItemInMainHand();
-						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSWLT.name(), args[1]);
-						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSCSize.name(), Integer.parseInt(args[2]));
-						weapon = Data.NBTTag.addNBT(weapon, WeaponTag.Consumable.name(), Boolean.parseBoolean(args[3]));
-						
-						p.getInventory().setItemInMainHand(weapon);
+					ItemStack ammo = p.getInventory().getItemInMainHand();
+					if(ShootSystem.isAmmo(ammo)) {
+						String linkTo = Data.NBTTag.getString(ammo, WeaponTag.HSWLT.name());
+						ammo = Data.NBTTag.addNBT(ammo, WeaponTag.HSWLT.name(), linkTo+";"+args[1]);
+					}else {
+						ammo = Data.NBTTag.addNBT(ammo, WeaponTag.HSWLT.name(), args[1]);
+						ammo = Data.NBTTag.addNBT(ammo, WeaponTag.HSCSize.name(), Integer.parseInt(args[2]));
+						ammo = Data.NBTTag.addNBT(ammo, WeaponTag.Consumable.name(), Boolean.parseBoolean(args[3]));						
 					}
+					p.getInventory().setItemInMainHand(ShootSystem.setAmmoLore(ammo));
+					return true;
 			   }
-			   break;
-				
-			default: break;
+			}default:{
+				sender.sendMessage(getHelpCommand(label, false));
+				return true;
+			}
 		}
-		
-		
-		return true;
+		return false;
 	}
 	
 	

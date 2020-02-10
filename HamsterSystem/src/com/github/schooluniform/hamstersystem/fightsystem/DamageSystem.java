@@ -313,8 +313,101 @@ public class DamageSystem {
 		if(attacker == null)return;
 		if(attacker instanceof Player) {
 			Bukkit.getScheduler().runTaskLaterAsynchronously(HamsterSystem.plugin, ()->{
-				I18n.senda(attacker, defender.getUpdateSign());				
+				Data.actionbar.sendActionbar((Player) attacker,  defender.getUpdateSign());			
 			}, 5);
+		}else if(defender.getEntity() instanceof Player) {
+			defender.getUpdateSign();
+		}
+	}
+	
+	public static void triggerDamage(FightEntity attacker,FightEntity defander,DamageType damageType,double damage) {
+		if(damageType == null)return;
+		double extraArmor = defander.getAttribute(EntityAttribute.valueOf(damageType.name()+"Armor"));
+		if(extraArmor <0) {
+			
+			return;
+		}
+		switch (damageType) {
+		case Blast:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-blast");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.blast",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			BlastEffect.blast(defander, 0);
+			break;
+		case Cold:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-cold");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.cold",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			ColdEffect.cold(defander, 0);
+			break;
+		case Corrosive:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-corrosive");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.corrosive",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			CorrosiveEffect.corrosive(defander,extraArmor);
+			break;
+		case Electricity:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-electricity");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.electricity",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			ElectricityEffect.electicity(defander, damage/extraArmor, 0);
+			break;
+		case Gas:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-gas");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.gas",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			GasEffect.gas(defander, damage, 0);
+			break;
+		case Heat:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-heat");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.heat",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			HeatEffect.heat(defander, 0);
+			break;
+		case Impact:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-impact");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.impact",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			ImpactEffect.impact(defander, 0);
+			break;
+		case Magnetic:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-magnetic");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.magnetic",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			MagneticEffect.magnetic(defander);
+			break;
+		case Puncture:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-puncture");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.puncture",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			PunctureEffect.puncture(defander, 0);
+			break;
+		case Radiation:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-radiation");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.radiation",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			RadiationEffect.radiation(defander, 0);
+			break;
+		case Slash:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-slash");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.slash",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			SlashEffect.slash(defander, damage, 0);
+			break;
+		case Toxin:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-toxin");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.toxin",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			ToxinEffect.toxin(defander, 0);
+			break;
+		case Viral:
+			I18n.senda(defander.getEntity(), "actionbar.fight.effect.be-viral");
+			I18n.senda(attacker.getEntity(), "actionbar.fight.effect.viral",
+					defander.getEntity().isCustomNameVisible()?defander.getEntity().getCustomName():defander.getEntity().getName());
+			ViralEffect.viral(defander);
+			break;
+		default:
+			break;
 		}
 	}
 	

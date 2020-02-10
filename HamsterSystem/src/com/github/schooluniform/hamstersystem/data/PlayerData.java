@@ -97,6 +97,7 @@ public class PlayerData extends FightEntity{
 		this.modId = modsData[0];
 		this.modLevel = modsData[1];
 		this.modExp = modsData[2];
+		this.modP = modsData[3];
 	}
 
 	public int[] getModId() {

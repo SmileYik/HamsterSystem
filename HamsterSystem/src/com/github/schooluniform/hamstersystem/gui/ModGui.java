@@ -50,7 +50,7 @@ public class ModGui {
 			int index = 0;
 			for(int slot : modSlots) {
 				if(index<modsData[0].length) {
-					if(modsData[0][index]<0) {
+					if(modsData[0][index]<=0) {
 						inv.setItem(slot, null);
 					}else {
 						inv.setItem(slot, Data.getMod(modsData[0][index]).getItem(modsData[1][index], modsData[2][index], modsData[3][index+1]));
@@ -67,7 +67,31 @@ public class ModGui {
 	
 	public static void openGUIEntity(Player p) {
 		PlayerData pd = Data.getPlayerData(p.getName());
-		
+		Inventory inv = getInventory();
+		inv.setItem(itemSlot, new ItemStack(Material.SKULL_ITEM,1,(short)3));
+		int[][] modsData = new int[][] {
+			pd.getModId(),
+			pd.getModLevel(),
+			pd.getModExp(),
+			pd.getModP()
+		};
+		if(modsData[0]!=null) {
+			int index = 0;
+			for(int slot : modSlots) {
+				if(index<modsData[0].length) {
+					if(modsData[0][index]<=0) {
+						inv.setItem(slot, null);
+					}else {
+						inv.setItem(slot, Data.getMod(modsData[0][index]).getItem(modsData[1][index], modsData[2][index], modsData[3][index+1]));
+					}
+					index++;
+				}else {
+					break;
+				}
+			}			
+		}
+		p.openInventory(inv);
+		ModTask.start(p, true);
 	}
 
 	public static List<Integer> getModSlots() {

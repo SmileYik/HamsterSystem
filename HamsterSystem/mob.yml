@@ -3,8 +3,19 @@ mods: null
 shield: 0
 health: 100
 energy: 100
-
+display-name: xxx
+#mythicmobs-id: xxx
 attributes: 
   Armor: 1
 minecraft-attributes:
   A: 1
+drops:
+  '0':
+    data: 几率 数量1 数量2
+    item: xx
+  '1':
+    data: xx
+    item: xx
+  'n':
+    data: xx
+    item: xx

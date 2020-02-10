@@ -49,18 +49,6 @@ public class ModTask implements Runnable{
 		Inventory inv = p.getOpenInventory().getTopInventory();
 		if(inv.getTitle().equalsIgnoreCase(Data.getModGuiTitle())) {
 			boolean changed = true;
-//			int index = 0;
-//			for(int slot : ModGui.getModSlots()) {
-//				ItemStack mod = inv.getItem(slot);
-//				if((mod != null && mods[index] == null) ||
-//						(mod == null && mods[index] != null) ||
-//						(mod != null && mods[index] != null && !mod.equals(mods[index]))) {
-//					mods[index] = mod;
-//					changed = true;
-//					continue;
-//				}
-//				index ++;
-//			}
 			int index = 0;
 			for(int slot : ModGui.getModSlots()) {
 				mods[index++] = inv.getItem(slot);

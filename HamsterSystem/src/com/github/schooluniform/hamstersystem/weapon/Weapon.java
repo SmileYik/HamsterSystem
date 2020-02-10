@@ -2,13 +2,19 @@ package com.github.schooluniform.hamstersystem.weapon;
 
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import com.github.schooluniform.hamstersystem.HamsterSystem;
+import com.github.schooluniform.hamstersystem.data.Data;
+import com.github.schooluniform.hamstersystem.fightsystem.DamageSystem;
+import com.github.schooluniform.hamstersystem.fightsystem.ShootSystem;
 import com.github.schooluniform.hamstersystem.fightsystem.base.DamageType;
 import com.github.schooluniform.hamstersystem.fightsystem.base.ElementalDamageType;
 import com.github.schooluniform.hamstersystem.fightsystem.base.ProjectileType;
@@ -176,6 +182,21 @@ public class Weapon {
 		return MessageFormat.format(lore, level,exp);
 	}
 	
+	public ItemStack getLore(ItemStack item){
+		if(!DamageSystem.isWeapon(item))
+			return item;
+		if(ShootSystem.isAmmo(item)) {
+			return ShootSystem.setAmmoLore(item);
+		}
+		int level[] = Data.NBTTag.getIntArray(item, WeaponTag.HSWEL.name());
+		int clip = Data.NBTTag.getInt(item, WeaponTag.HSCSize.name());
+		int clipMax = Data.NBTTag.getInt(item, WeaponTag.HSWClip.name());
+		ItemMeta meta = item.getItemMeta();
+		meta.setLore(Arrays.asList(MessageFormat.format(lore, level[0],level[1],clip,clipMax).split("\n")));
+		item.setItemMeta(meta);
+		return item;
+	}
+	
 	public String getLore(){
 		return lore;
 	}
@@ -196,7 +217,7 @@ public class Weapon {
 	
 	public Double getAttribute(WeaponAttribute type){
 		if(attributes.containsKey(type))return attributes.get(type);
-		return null;
+		return 0D;
 	}
 	
 	public HashMap<DamageType, Double> getDamages(){

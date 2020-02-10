@@ -1,5 +1,6 @@
 package com.github.schooluniform.hamstersystem.fightsystem;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -21,6 +22,7 @@ import org.bukkit.event.player.PlayerPickupArrowEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
 
@@ -104,7 +106,8 @@ public class ShootSystem implements Listener{
 			
 			weapon = Data.NBTTag.addNBT(weapon, WeaponTag.HSCSize.name(), 
 					Data.NBTTag.getInt(weapon, WeaponTag.HSCSize.name())-1);
-
+			weapon = launcher.getLore(weapon);
+			
 			if(e.getHand() == EquipmentSlot.HAND){
 				p.getInventory().setItemInMainHand(weapon);
 			}else if(e.getHand() == EquipmentSlot.OFF_HAND){
@@ -130,6 +133,10 @@ public class ShootSystem implements Listener{
 		if(!DamageSystem.isWeapon(weapon) || !isAmmo(ammo))return;
 		Weapon weaponData = DamageSystem.getWeapon(weapon);
 		if(!(weaponData instanceof WeaponLauncher))return;
+		if(weapon.getAmount()>1) {
+			I18n.senda(e.getPlayer(), "actionbar.fight.shoot.weapon-amount-error");
+			return;
+		}
 		String key = getReloadingKey(weaponData.getName(), e.getPlayer().getEntityId());
 		if(reloading.contains(key)){
 			e.setCancelled(true);
@@ -143,8 +150,8 @@ public class ShootSystem implements Listener{
 		boolean consumable = Data.NBTTag.getBoolean(ammo, WeaponTag.Consumable.name());
 		int amount = 1;
 		reloadingTime = (reloadingTime>(int)reloadingTime?(int)reloadingTime+1:reloadingTime);
-		System.out.println(ammoSize+" "+weaponCSize);
-		if(!linkTo.contains(weaponData.getName())){
+		//if(!linkTo.contains(weaponData.getName()))
+		if(!Arrays.asList(linkTo.split(";")).contains(weaponData.getName())){
 			I18n.senda(e.getPlayer(), "actionbar.fight.shoot.ammo-not-fit");
 			return;
 		}
@@ -198,7 +205,6 @@ public class ShootSystem implements Listener{
 			ItemStack weapon2 = Data.NBTTag.addNBT(weapon, WeaponTag.HSCSize.name(), weaponCSize2);
 			ItemStack ammo2 = null,ammo3 = null,ammo4 = null;
 					//ammo3 = ammo.clone();
-			System.out.println(amountTemp+"_"+ammoSize2);
 			if(amountTemp == ammo.getAmount() &&ammoSize2 == 0 && consumable){
 				ammo2 = null;
 			}else if(amountTemp == ammo.getAmount()&& consumable){
@@ -232,14 +238,18 @@ public class ShootSystem implements Listener{
 					ammo2.setAmount(ammo2.getAmount()-amountTemp);					
 				}
 			}
-			e.getPlayer().getInventory().setItemInMainHand(weapon2);
-			e.getPlayer().getInventory().setItemInOffHand(ammo2);
+			
+			
+			e.getPlayer().getInventory().setItemInMainHand(weaponData.getLore(weapon2));
+			e.getPlayer().getInventory().setItemInOffHand(setAmmoLore(ammo2));
 			
 			if(ammo3 != null){
+				ammo3 = setAmmoLore(ammo3);
 				 if(!e.getPlayer().getInventory().addItem(ammo3).isEmpty())
 					 e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), ammo3);					 
 			}
 			if(ammo4 != null){
+				ammo4 = setAmmoLore(ammo4);
 				 if(!e.getPlayer().getInventory().addItem(ammo4).isEmpty())
 					 e.getPlayer().getWorld().dropItem(e.getPlayer().getLocation(), ammo4);					 
 			}
@@ -303,7 +313,7 @@ public class ShootSystem implements Listener{
 			e.setCancelled(true);
 	}
 	
-	private boolean isAmmo(ItemStack ammo){
+	public static boolean isAmmo(ItemStack ammo){
 		if(ammo == null || ammo.getType() == Material.AIR){
 			return false;
 		}else{
@@ -312,6 +322,13 @@ public class ShootSystem implements Listener{
 			if(!Data.NBTTag.contantsNBT(ammo, WeaponTag.HSWLT.name()))return false;
 			return true;
 		}
+	}
+	
+	public static ItemStack setAmmoLore(ItemStack ammo) {
+		ItemMeta meta = ammo.getItemMeta();
+		meta.setLore(Arrays.asList("Ammo: "+Data.NBTTag.getInt(ammo, WeaponTag.HSCSize.name())));
+		ammo.setItemMeta(meta);
+		return ammo;
 	}
 	
 	private void launchProjectile(Player p,double x,double y, double z,double ejectionSpeed,ProjectileType pt){

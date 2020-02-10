@@ -1,6 +1,15 @@
 package com.github.schooluniform.hamstersystem.util;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+
+import org.bukkit.GameMode;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.util.BlockIterator;
 
 import com.github.schooluniform.hamstersystem.entity.EntityAttribute;
 
@@ -89,10 +98,57 @@ public class Util {
 	//TODO 
 	public static HashMap<EntityAttribute,Double> getDefaultEntityAttributes(){
 		HashMap<EntityAttribute,Double> attributes = new HashMap<>();
-		attributes.put(EntityAttribute.Health, 100D);
+		attributes.put(EntityAttribute.Health, 20D);
 		attributes.put(EntityAttribute.Armor, 1D);
-		attributes.put(EntityAttribute.Shield, 100D);
+		attributes.put(EntityAttribute.Shield, 20D);
 		attributes.put(EntityAttribute.ShieldRefresh, 10D);
 		return attributes;
 	}
+	
+	/**
+	 * 这一段参考的MythicMob
+	 * 未启用
+	 * @param entity
+	 * @return
+	 */
+	private static LivingEntity getTargetEntity(LivingEntity entity) {
+        final int range = 32;
+        List<LivingEntity> entities = new ArrayList<LivingEntity>();
+        for(Entity e : entity.getNearbyEntities(range, range, range)) {
+        	if(e instanceof LivingEntity) {
+        		entities.add((LivingEntity)e);
+        	}
+        }
+        
+        LivingEntity target = null;
+        BlockIterator bi;
+        try {
+            bi = new BlockIterator(entity, range);
+	        while (bi.hasNext()) {
+	            Block b = bi.next();
+	            if (!b.getType().isTransparent()) {
+	            	break;
+	            }
+	            int bx = b.getX();
+	            int by = b.getY();
+	            int bz = b.getZ();
+	            for (LivingEntity e : entities) {
+	                double ex = e.getLocation().getX();
+	                double ey = e.getLocation().getY();
+	                double ez = e.getLocation().getZ();
+	                //                     最大体长  = 根8-根1/8 = 2.47 = 2.5 
+	                if (bx - 0.75 <= ex && ex <= bx + 1.75 && 
+	                		bz - 0.75 <= ez && ez <= bz + 1.75 &&
+	                		by - 1 <= ey && ey <= by + 2.5) {//目标身高判断 凋零最高3.5
+	                    if (target == null || !(target instanceof Player) || ((Player)target).getGameMode() != GameMode.CREATIVE) {
+	                        return e;
+	                    }
+	                }
+	            }
+	        }
+	        return null;
+	    }catch (IllegalStateException e2) {
+            return null;
+        }
+    }
 }
